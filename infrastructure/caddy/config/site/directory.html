@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>South Suburbs Best – Directory</title>
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; max-width: 960px; margin: 2rem auto; padding: 0 1rem; }
+    header { display:flex; gap:1rem; align-items:center; flex-wrap:wrap; }
+    input { padding: .6rem .8rem; border: 1px solid #ddd; border-radius: 10px; flex: 1; min-width: 240px; }
+    .pill { padding:.3rem .6rem; border:1px solid #eee; border-radius:999px; font-size:.8rem; margin-right:.3rem; }
+    .card { border:1px solid #eee; border-radius:16px; padding:1rem 1.2rem; margin:.8rem 0; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
+    .muted { color:#666; font-size:.9rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1 style="margin:0">South Suburbs Best</h1>
+    <input id="q" placeholder="Search plumbers, electricians, HVAC…"/>
+  </header>
+
+  <div id="results"></div>
+
+  <script>
+    const DIRECTUS_URL = 'https://admin.southsuburbsbest.com/items/businesses?fields=id,name,phone,website,categories.categories_id.name,categories.categories_id.slug&limit=1000';
+    const MEILI_URL = 'https://search.southsuburbsbest.com/indexes/businesses/search';
+    const MEILI_SEARCH_KEY = 'gXtnjBX5CxTRzmEq0F3mGw8oBI0lLUkMLX36XBic5pk=';
+
+    const results = document.getElementById('results');
+    const q = document.getElementById('q');
+
+    function render(items) {
+      results.innerHTML = items.map(b => {
+        const cats = (b.categories || []).map(c => c.categories_id?.name || c).filter(Boolean);
+        const pills = cats.map(c => `<span class="pill">${c}</span>`).join('');
+        const phone = b.phone ? `<div class="muted">${b.phone}</div>` : '';
+        const site = b.website ? `<div><a href="${b.website}" target="_blank" rel="noopener">Visit website</a></div>` : '';
+        return `
+          <div class="card">
+            <h3 style="margin:.2rem 0">${b.name || b.document?.name}</h3>
+            <div style="margin:.4rem 0">${pills || '<span class="muted">No categories</span>'}</div>
+            ${phone}
+            ${site}
+          </div>
+        `;
+      }).join('');
+    }
+
+    fetch(DIRECTUS_URL)
+      .then(r => r.json())
+      .then(json => render(json.data || []))
+      .catch(() => render([]));
+
+    let t;
+    q.addEventListener('input', () => {
+      const term = q.value.trim();
+      if (!term) {
+        fetch(DIRECTUS_URL).then(r=>r.json()).then(j=>render(j.data||[]));
+        return;
+      }
+      clearTimeout(t);
+      t = setTimeout(() => {
+        fetch(MEILI_URL, {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + MEILI_SEARCH_KEY,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ q: term, limit: 50 })
+        })
+        .then(r => r.json())
+        .then(j => {
+          const items = (j.hits || []).map(h => ({
+            name: h.name, phone: h.phone, website: h.website, categories: (h.categories || []).map(slug => ({ categories_id: { name: slug }}))
+          }));
+          render(items);
+        })
+        .catch(() => render([]));
+      }, 200);
+    });
+  </script>
+</body>
+</html>

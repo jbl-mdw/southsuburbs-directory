@@ -1,0 +1,11 @@
+southsuburbsbest.com {
+    root * /var/www/html
+    encode gzip
+    file_server
+    @health path /health.txt
+    handle @health { respond "ok" 200 }
+}
+
+automation.leads2scale.com {
+    reverse_proxy n8n:5678
+}

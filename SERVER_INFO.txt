@@ -1,0 +1,20 @@
+ZAKA Server Setup
+=================
+Setup Date: Tue Oct 21 03:31:39 PM UTC 2025
+Server IP: 178.156.170.185
+Domain: southsuburbsbest.com
+Project Root: /opt/southsuburbs
+Docker Version: Docker version 28.5.1, build e180ab8
+OS: Ubuntu 24.04.3 LTS
+
+Installed Services:
+- Docker & Docker Compose
+- UFW Firewall (ports: 22, 80, 443)
+- Fail2Ban (SSH protection)
+- Swap: 4GB
+- Monitoring: ctop, lazydocker
+
+Deploy User: deploy
+User Groups: docker, sudo (limited)
+
+Next: Deploy docker-compose stack

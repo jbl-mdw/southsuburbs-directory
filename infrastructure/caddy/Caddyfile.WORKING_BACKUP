@@ -1,0 +1,38 @@
+{
+        email {env.EMAIL}
+        # acme_ca https://acme-staging-v02.api.letsencrypt.org/directory
+}
+
+# ═══════════════════════════════════════
+# DIRECTORY PROJECT - southsuburbsbest.com
+# ═══════════════════════════════════════
+
+admin.southsuburbsbest.com {
+        encode zstd gzip
+        reverse_proxy ssb_directus:8055
+}
+
+search.southsuburbsbest.com {
+        encode zstd gzip
+        reverse_proxy ssb_meilisearch:7700
+}
+
+status.southsuburbsbest.com {
+        encode zstd gzip
+        reverse_proxy ssb_uptimekuma:3001
+}
+
+# ═══════════════════════════════════════
+# SHARED PLATFORM SERVICES - leads2scale.com
+# ⚠️ THESE SERVE ALL PROJECTS - DO NOT MODIFY
+# ═══════════════════════════════════════
+
+automation.leads2scale.com {
+        encode zstd gzip
+        reverse_proxy ssb_n8n:5678
+}
+
+ai.leads2scale.com {
+        encode zstd gzip
+        reverse_proxy flowise:3000
+}
