@@ -6,7 +6,12 @@ export default function Home() {
   return (
     <main>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20">
+      <section 
+        className="relative text-white py-24 bg-cover bg-center"
+        style={{ 
+          backgroundImage: "linear-gradient(rgba(37, 99, 235, 0.8), rgba(29, 78, 216, 0.8)), url(/hero.png)" 
+        }}
+      >
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-5xl font-bold mb-4">
             Find the Best Local Businesses

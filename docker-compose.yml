@@ -103,6 +103,7 @@ services:
     restart: unless-stopped
     environment:
       - NODE_ENV=production
+      - DIRECTUS_URL=http://ssb_directus:8055
       - NEXT_PUBLIC_DIRECTUS_URL=https://admin.southsuburbsbest.com
       - NEXT_PUBLIC_MEILISEARCH_URL=https://search.southsuburbsbest.com
       - NEXT_PUBLIC_MEILISEARCH_KEY=9441662f9cacaef99f9782185e4a6b292be7e71d97ec118ac2bf0a55c7cce829
