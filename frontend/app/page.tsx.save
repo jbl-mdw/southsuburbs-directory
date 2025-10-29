@@ -1,4 +1,4 @@
-import Link from 'next/link';
+
 import SearchBar from '@/components/SearchBar';
 import CategoryGrid from '@/components/CategoryGrid';
 import FeaturedBusinesses from '@/components/FeaturedBusinesses';
@@ -39,19 +39,18 @@ export default function Home() {
                 <span className="text-sm font-medium text-gray-700 group-hover:text-blue-600">Home Services</span>
               </div>
               
-             {/* Dropdown */}
+              {/* Dropdown */}
               <div className="absolute left-1/2 transform -translate-x-1/2 mt-2 w-48 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                 <div className="py-2">
-                  <Link href="/category/hvac" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">🔥 HVAC</Link>
-                  <Link href="/category/roofer" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">🏠 Roofer</Link>
-                  <Link href="/category/plumber" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">🚰 Plumber</Link>
-                  <Link href="/category/electrician" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">⚡ Electrician</Link>
-                  <Link href="/category/landscaper" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">🌿 Landscaper</Link>
-                  <Link href="/category/handyman" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">🔧 Handyman</Link>
+                  <Link href="/category/hvac" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">HVAC</Link>
+                  <Link href="/category/roofer" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">Roofer</Link>
+                  <Link href="/category/plumber" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">Plumber</Link>
+                  <Link href="/category/electrician" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">Electrician</Link>
+                  <Link href="/category/landscaper" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">Landscaper</Link>
+                  <Link href="/category/handyman" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600">Handyman</Link>
                 </div>
-              </div> 
-            </div>
-                
+              </div>
+
             {/* Automotive */}
             <Link href="/category/automotive" className="flex flex-col items-center group">
               <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center group-hover:bg-red-600 transition mb-2">
