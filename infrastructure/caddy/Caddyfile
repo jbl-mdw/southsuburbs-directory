@@ -1,44 +1,35 @@
-{
-        email {env.EMAIL}
-        # acme_ca https://acme-staging-v02.api.letsencrypt.org/directory
-}
-
-# ═══════════════════════════════════════
-# DIRECTORY PROJECT - southsuburbsbest.com
-# ═══════════════════════════════════════
-
-admin.southsuburbsbest.com {
-        encode zstd gzip
-        reverse_proxy ssb_directus:8055
-}
-
-search.southsuburbsbest.com {
-        encode zstd gzip
-        reverse_proxy ssb_meilisearch:7700
-}
-
 status.southsuburbsbest.com {
-        encode zstd gzip
-        reverse_proxy ssb_uptimekuma:3001
+    encode zstd gzip
+    reverse_proxy ssb_uptimekuma:3001
 }
 
-# ═══════════════════════════════════════
 # SHARED PLATFORM SERVICES - leads2scale.com
 # ⚠️ THESE SERVE ALL PROJECTS - DO NOT MODIFY
-# ═══════════════════════════════════════
 
 automation.leads2scale.com {
-        encode zstd gzip
-        reverse_proxy n8n:5678
+    encode zstd gzip
+    reverse_proxy n8n:5678
 }
 
 ai.leads2scale.com {
-        encode zstd gzip
-        reverse_proxy flowise:3000
+    encode zstd gzip
+    reverse_proxy flowise:3000
 }
 
 southsuburbsbest.com, www.southsuburbsbest.com {
     encode zstd gzip
+
+    # 1. Proxy Directus API / admin routes under /directus/*
+    route /directus* {
+        uri strip_prefix /directus
+        reverse_proxy ssb_directus:8055
+    }
+
+    # 2. Everything else → Next.js frontend
     reverse_proxy ssb_frontend:3000
 }
 
+admin.southsuburbsbest.com {
+    encode zstd gzip
+    reverse_proxy ssb_directus:8055
+}
