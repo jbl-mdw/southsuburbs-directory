@@ -14,7 +14,7 @@ type Business = {
   is_featured?: boolean;
 };
 
-export default function ExplorePage() {
+export default function ExplorePageClient() {
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
