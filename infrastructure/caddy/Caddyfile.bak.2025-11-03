@@ -3,6 +3,9 @@ status.southsuburbsbest.com {
     reverse_proxy ssb_uptimekuma:3001
 }
 
+# SHARED PLATFORM SERVICES - leads2scale.com
+# ⚠️ THESE SERVE ALL PROJECTS - DO NOT MODIFY
+
 automation.leads2scale.com {
     encode zstd gzip
     reverse_proxy n8n:5678
@@ -16,24 +19,15 @@ ai.leads2scale.com {
 southsuburbsbest.com, www.southsuburbsbest.com {
     encode zstd gzip
 
+    # 1) Proxy Directus when path begins with /directus
     @directus path /directus*
     handle @directus {
         uri strip_prefix /directus
         reverse_proxy ssb_directus:8055
     }
 
-    # Everything else -> Next.js container (force HTTP/1.1 and no Accept-Encoding)
-    reverse_proxy ssb_frontend:3000 {
-        header_up Host {host}
-        header_up X-Real-IP {remote_host}
-        header_up X-Forwarded-For {remote_host}
-        header_up X-Forwarded-Host {host}
-        header_up X-Forwarded-Proto https
-        header_up Accept-Encoding ""
-        transport http {
-            versions 1.1
-        }
-    }
+    # 2) Everything else → Next.js frontend (running on host:3013)
+    reverse_proxy 172.17.0.1:3013
 }
 
 admin.southsuburbsbest.com {

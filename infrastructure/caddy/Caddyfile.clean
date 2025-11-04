@@ -14,22 +14,22 @@ ai.leads2scale.com {
 }
 
 southsuburbsbest.com, www.southsuburbsbest.com {
-    encode zstd gzip
-
+    # /directus -> Directus
     @directus path /directus*
     handle @directus {
         uri strip_prefix /directus
         reverse_proxy ssb_directus:8055
     }
 
-    # Everything else -> Next.js container (force HTTP/1.1 and no Accept-Encoding)
+    # Everything else -> Next.js, force HTTP/1.1 and remove Accept-Encoding
+    encode zstd gzip
     reverse_proxy ssb_frontend:3000 {
         header_up Host {host}
         header_up X-Real-IP {remote_host}
         header_up X-Forwarded-For {remote_host}
         header_up X-Forwarded-Host {host}
         header_up X-Forwarded-Proto https
-        header_up Accept-Encoding ""
+        header_up -Accept-Encoding
         transport http {
             versions 1.1
         }
