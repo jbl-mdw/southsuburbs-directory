@@ -1,0 +1,122 @@
+name: southsuburbs
+services:
+  postgres:
+    image: postgis/postgis:15-3.4
+    container_name: ssb_postgres
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./infrastructure/postgres/data:/var/lib/postgresql/data
+      - ./infrastructure/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL","pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks: [web]
+
+  directus:
+    image: directus/directus:latest
+    container_name: ssb_directus
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: always
+    environment:
+      KEY: ${DIRECTUS_KEY}
+      SECRET: ${DIRECTUS_SECRET}
+      PUBLIC_URL: https://admin.southsuburbsbest.com
+      TRUST_PROXY: "true"
+      DB_CLIENT: pg
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: ${POSTGRES_DB}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      WEBSOCKETS_ENABLED: "true"
+      CORS_ENABLED: "true"
+      CORS_ORIGIN: "https://admin.southsuburbsbest.com,https://southsuburbsbest.com"
+      ADMIN_EMAIL: ${DIRECTUS_ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${DIRECTUS_ADMIN_PASSWORD}
+      ACCESS_TOKEN_TTL: 8h
+      REFRESH_TOKEN_TTL: 7d
+      SESSION_COOKIE_SECURE: "false"
+      SESSION_COOKIE_SAME_SITE: lax
+      STORAGE_LOCATIONS: local
+      STORAGE_LOCAL_DRIVER: local
+      STORAGE_LOCAL_ROOT: /data/uploads
+    volumes:
+      - ./infrastructure/directus/uploads:/data/uploads
+    networks: [web]
+
+  meilisearch:
+    image: getmeili/meilisearch:latest
+    container_name: ssb_meilisearch
+    restart: always
+    environment:
+      MEILI_ENV: production
+      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY}
+      MEILI_NO_ANALYTICS: "true"
+    volumes:
+      - ./infrastructure/meilisearch/data:/meili_data
+    networks: [web]
+    ports:
+    - "7700:7700"
+
+  caddy:
+    image: caddy:2
+    container_name: ssb_caddy
+    restart: always
+    depends_on:
+      - directus
+      - meilisearch
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      EMAIL: ${CADDY_EMAIL}
+    volumes:
+      - ./infrastructure/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./infrastructure/caddy/data:/data
+      - ./infrastructure/caddy/config:/config
+    networks: 
+    - web
+    - shared_network
+
+  uptimekuma:
+    image: louislam/uptime-kuma:1
+    container_name: ssb_uptimekuma
+    restart: always
+    volumes:
+      - ./infrastructure/uptime-kuma/data:/app/data
+    networks: [web]
+
+
+  frontend:
+    container_name: ssb_frontend
+    build:
+     
+ context: ./frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - DIRECTUS_URL=http://ssb_directus:8055
+      - NEXT_PUBLIC_DIRECTUS_URL=https://admin.southsuburbsbest.com
+      - NEXT_PUBLIC_MEILISEARCH_URL=https://search.southsuburbsbest.com
+      - NEXT_PUBLIC_MEILISEARCH_KEY=9441662f9cacaef99f9782185e4a6b292be7e71d97ec118ac2bf0a55c7cce829
+      - NEXT_PUBLIC_N8N_WEBHOOK_URL=https://automation.leads2scale.com/webhook/lead-submission
+   # ports:
+    #  - "3001:3000"
+    networks:
+      - web
+
+networks:
+  web:
+    driver: bridge
+  shared_network:
+    external: true
+  

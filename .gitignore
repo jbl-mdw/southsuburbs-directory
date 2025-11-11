@@ -50,3 +50,25 @@ Thumbs.db
 # Temporary files
 tmp/
 temp/
+
+# --- local env & secrets ---
+frontend.env
+*.env
+*.env.*
+!/.env.example
+
+# --- builds / caches ---
+frontend/.next
+frontend/next
+node_modules/
+*.log
+
+# --- local overrides / backups / state dumps ---
+docker-compose.override.yml
+docker-compose.yml.bak*
+docker_state_*.txt
+
+# --- misc oops files ---
+frontend/frontend@1.0.0
+# local secrets
+scripts/.env.meili

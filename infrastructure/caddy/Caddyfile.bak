@@ -1,0 +1,27 @@
+southsuburbsbest.com, www.southsuburbsbest.com {
+    encode zstd gzip
+
+    # Serve widget JS directly from Caddy (bypass Next)
+    handle_path /widget/* {
+        root * /srv/widget
+        file_server
+    }
+
+    # Optional: proxy to widget API
+    handle_path /widget-api/* {
+        reverse_proxy 178.156.170.185:8081
+    }
+
+    # Default: proxy the app
+    reverse_proxy ssb_frontend:3000 {
+        header_up X-Forwarded-Proto https
+        transport http {
+            versions 1.1
+        }
+    }
+}
+
+admin.southsuburbsbest.com {
+    encode zstd gzip
+    reverse_proxy ssb_directus:8055
+}

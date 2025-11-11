@@ -1,0 +1,13 @@
+http://www.southsuburbsbest.com {
+    redir https://southsuburbsbest.com{uri} permanent
+}
+
+southsuburbsbest.com {
+    encode gzip
+    reverse_proxy ssb_frontend:3000
+}
+
+admin.southsuburbsbest.com {
+    encode gzip
+    reverse_proxy ssb_directus:8055
+}

@@ -1,0 +1,7 @@
+services:
+  frontend:    # <-- use the exact service key printed above
+    environment:
+      - NEXT_PUBLIC_DIRECTUS_URL=https://admin.southsuburbsbest.com
+      - DIRECTUS_URL=https://admin.southsuburbsbest.com
+      - N8N_URL=https://automation.leads2scale.com
+      - FLOWISE_URL=https://ai.leads2scale.com

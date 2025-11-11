@@ -1,68 +1,46 @@
-import { getPostBySlug, getAllPostSlugs } from "@/lib/posts";
+import { notFound } from "next/navigation";
 
-export async function generateStaticParams() {
-  try {
-    const slugs = await getAllPostSlugs();
-    if (!slugs?.length) return [];
-    return slugs.map((slug: string) => ({ slug }));
-  } catch {
-    return [];
-  }
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+type PageProps = { params: { slug: string } };
+
+async function fetchPost(slug: string) {
+  const base = process.env.DIRECTUS_URL || process.env.NEXT_PUBLIC_DIRECTUS_URL!;
+  const filter = encodeURIComponent(JSON.stringify({ slug: { _eq: slug } }));
+  const url =
+    `${base}/items/posts?filter=${filter}` +
+    `&limit=1&fields[]=title&fields[]=slug&fields[]=excerpt&fields[]=body` +
+    `&fields[]=hero_image&fields[]=author_name&fields[]=published_at` +
+    `&fields[]=is_featured&fields[]=related_cities.slug`;
+  const res = await fetch(url, { cache: "no-store" });
+  if (!res.ok) throw new Error(`Failed to fetch post: ${res.status}`);
+  const json = await res.json();
+  return json?.data?.[0] ?? null;
 }
 
+export async function generateMetadata() {
+  return {
+    title: 'Blog Post',
+    description: 'Read our latest blog post',
+  };
+}
 
-export default async function BlogPostPage({ params }: { params: { slug: string } }) {
-  const post = await getPostBySlug(params.slug);
-
-  if (!post) {
-    return (
-      <main className="container mx-auto max-w-3xl py-20 px-4 text-center text-gray-700">
-        <h1 className="text-2xl font-semibold mb-4">Post not found</h1>
-        <p className="text-sm text-gray-500">Check back soon.</p>
-      </main>
-    );
-  }
-
+export default async function BlogPostPage({ params }: PageProps) {
+  const post = await fetchPost(params.slug);
+  if (!post) notFound();
   return (
-    <main className="flex flex-col w-full bg-white">
-      <section className="bg-gray-900 text-white">
-        <div className="relative w-full">
-          {post.hero_image && (
-            <div
-              className="h-48 md:h-64 w-full bg-cover bg-center opacity-60"
-              style={{ backgroundImage: `url(${post.hero_image})` }}
-            />
-          )}
-          {!post.hero_image && <div className="h-32 md:h-40 w-full bg-gray-800" />}
-
-          <div className="absolute inset-0 flex items-center justify-center text-center px-4">
-            <div className="max-w-3xl">
-              <h1 className="text-2xl md:text-3xl font-semibold text-white mb-4 leading-tight">
-                {post.title}
-              </h1>
-              <div className="text-xs text-gray-200 font-medium flex flex-col">
-                <span>{post.author_name || "South Suburbs Best"}</span>
-                <span>
-                  {post.published_at
-                    ? new Date(post.published_at).toLocaleDateString()
-                    : "Recently"}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/60 to-black/80 pointer-events-none" />
-        </div>
-      </section>
-
-      <section className="py-12">
-        <div className="container mx-auto max-w-3xl px-4">
-          <article
-            className="prose prose-gray max-w-none"
-            dangerouslySetInnerHTML={{ __html: post.body || "" }}
-          />
-        </div>
-      </section>
+    <main className="mx-auto max-w-3xl px-4 py-10">
+      <h1 className="text-3xl font-bold mb-4">{post.title}</h1>
+      {post.published_at && (
+        <p className="text-sm text-gray-500 mb-6">
+          {new Date(post.published_at).toLocaleDateString()}
+        </p>
+      )}
+      <article className="prose">
+        {post.excerpt && <p><em>{post.excerpt}</em></p>}
+        {post.body && <div dangerouslySetInnerHTML={{ __html: post.body }} />}
+      </article>
     </main>
   );
 }

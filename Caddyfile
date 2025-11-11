@@ -1,9 +1,20 @@
 southsuburbsbest.com {
-    root * /var/www/html
     encode gzip
-    file_server
+    
     @health path /health.txt
-    handle @health { respond "ok" 200 }
+    handle @health { 
+        respond "ok" 200 
+    }
+    
+    handle_path /widget/* {
+        reverse_proxy host.docker.internal:8081
+    }
+    
+    handle_path /api/widget/* {
+        reverse_proxy host.docker.internal:8081
+    }
+    
+    reverse_proxy frontend:3000
 }
 
 automation.leads2scale.com {

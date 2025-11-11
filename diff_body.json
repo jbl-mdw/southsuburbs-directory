@@ -1,0 +1,553 @@
+{
+  "source": {
+    "errors": [
+      {
+        "message": "Invalid user credentials.",
+        "extensions": {
+          "code": "INVALID_CREDENTIALS"
+        }
+      }
+    ]
+  },
+  "target": {
+    "collections": [
+      {
+        "collection": "leads",
+        "meta": {
+          "icon": "maps_home_work"
+        },
+        "schema": {
+          "name": "leads",
+          "fields": [
+            {
+              "name": "id",
+              "type": "uuid",
+              "primary": true,
+              "default": "uuid_generate_v4()"
+            },
+            {
+              "name": "created_at",
+              "type": "timestamp",
+              "default": "now()",
+              "is_nullable": false
+            },
+            {
+              "name": "updated_at",
+              "type": "timestamp",
+              "default": "now()",
+              "is_nullable": false
+            },
+            {
+              "name": "source",
+              "type": "varchar(120)"
+            },
+            {
+              "name": "niche_slug",
+              "type": "varchar(120)"
+            },
+            {
+              "name": "department_slug",
+              "type": "varchar(120)"
+            },
+            {
+              "name": "name",
+              "type": "varchar(180)"
+            },
+            {
+              "name": "phone",
+              "type": "varchar(40)"
+            },
+            {
+              "name": "email",
+              "type": "varchar(180)"
+            },
+            {
+              "name": "zip",
+              "type": "varchar(15)"
+            },
+            {
+              "name": "city",
+              "type": "varchar(120)"
+            },
+            {
+              "name": "notes",
+              "type": "text"
+            },
+            {
+              "name": "status",
+              "type": "varchar(30)"
+            }
+          ],
+          "indexes": [
+            {
+              "columns": [
+                "email"
+              ],
+              "unique": false
+            },
+            {
+              "columns": [
+                "phone"
+              ],
+              "unique": false
+            },
+            {
+              "columns": [
+                "niche_slug",
+                "department_slug"
+              ],
+              "unique": false
+            }
+          ]
+        }
+      },
+      {
+        "collection": "call_sessions",
+        "meta": {
+          "icon": "call"
+        },
+        "schema": {
+          "name": "call_sessions",
+          "fields": [
+            {
+              "name": "id",
+              "type": "uuid",
+              "primary": true,
+              "default": "uuid_generate_v4()"
+            },
+            {
+              "name": "created_at",
+              "type": "timestamp",
+              "default": "now()",
+              "is_nullable": false
+            },
+            {
+              "name": "call_id",
+              "type": "varchar(120)"
+            },
+            {
+              "name": "leadRef",
+              "type": "uuid"
+            },
+            {
+              "name": "startTime",
+              "type": "timestamp"
+            },
+            {
+              "name": "endTime",
+              "type": "timestamp"
+            },
+            {
+              "name": "duration",
+              "type": "integer"
+            },
+            {
+              "name": "consent_type",
+              "type": "varchar(40)"
+            },
+            {
+              "name": "call_recording_url",
+              "type": "text"
+            },
+            {
+              "name": "transcript_text",
+              "type": "text"
+            }
+          ],
+          "indexes": [
+            {
+              "columns": [
+                "call_id"
+              ],
+              "unique": true
+            },
+            {
+              "columns": [
+                "leadRef"
+              ],
+              "unique": false
+            }
+          ],
+          "foreignKeys": [
+            {
+              "columns": [
+                "leadRef"
+              ],
+              "references": {
+                "table": "leads",
+                "columns": [
+                  "id"
+                ]
+              },
+              "onDelete": "SET NULL"
+            }
+          ]
+        }
+      },
+      {
+        "collection": "agents",
+        "meta": {
+          "icon": "smart_toy"
+        },
+        "schema": {
+          "name": "agents",
+          "fields": [
+            {
+              "name": "id",
+              "type": "uuid",
+              "primary": true,
+              "default": "uuid_generate_v4()"
+            },
+            {
+              "name": "created_at",
+              "type": "timestamp",
+              "default": "now()",
+              "is_nullable": false
+            },
+            {
+              "name": "niche_slug",
+              "type": "varchar(120)"
+            },
+            {
+              "name": "city_slug",
+              "type": "varchar(120)"
+            },
+            {
+              "name": "channel",
+              "type": "varchar(20)"
+            },
+            {
+              "name": "llm_provider",
+              "type": "varchar(40)"
+            },
+            {
+              "name": "llm_model",
+              "type": "varchar(120)"
+            },
+            {
+              "name": "prompt_system",
+              "type": "text"
+            },
+            {
+              "name": "retrieval_enabled",
+              "type": "boolean",
+              "default": false
+            },
+            {
+              "name": "kb_filter_tags",
+              "type": "jsonb"
+            },
+            {
+              "name": "handoff_threshold",
+              "type": "numeric(4,2)",
+              "default": 0.80
+            },
+            {
+              "name": "is_active",
+              "type": "boolean",
+              "default": true
+            }
+          ],
+          "indexes": [
+            {
+              "columns": [
+                "niche_slug",
+                "city_slug",
+                "channel"
+              ],
+              "unique": false
+            }
+          ]
+        }
+      },
+      {
+        "collection": "routing_rules",
+        "meta": {
+          "icon": "alt_route"
+        },
+        "schema": {
+          "name": "routing_rules",
+          "fields": [
+            {
+              "name": "id",
+              "type": "uuid",
+              "primary": true,
+              "default": "uuid_generate_v4()"
+            },
+            {
+              "name": "created_at",
+              "type": "timestamp",
+              "default": "now()",
+              "is_nullable": false
+            },
+            {
+              "name": "niche_slug",
+              "type": "varchar(120)"
+            },
+            {
+              "name": "type",
+              "type": "varchar(20)"
+            },
+            {
+              "name": "match_value",
+              "type": "varchar(240)"
+            },
+            {
+              "name": "target_type",
+              "type": "varchar(20)"
+            },
+            {
+              "name": "target_ref",
+              "type": "varchar(240)"
+            },
+            {
+              "name": "priority",
+              "type": "integer",
+              "default": 100
+            }
+          ],
+          "indexes": [
+            {
+              "columns": [
+                "niche_slug",
+                "type",
+                "match_value"
+              ],
+              "unique": false
+            },
+            {
+              "columns": [
+                "priority"
+              ],
+              "unique": false
+            }
+          ]
+        }
+      },
+      {
+        "collection": "kb_documents",
+        "meta": {
+          "icon": "library_books"
+        },
+        "schema": {
+          "name": "kb_documents",
+          "fields": [
+            {
+              "name": "id",
+              "type": "uuid",
+              "primary": true,
+              "default": "uuid_generate_v4()"
+            },
+            {
+              "name": "created_at",
+              "type": "timestamp",
+              "default": "now()",
+              "is_nullable": false
+            },
+            {
+              "name": "title",
+              "type": "varchar(240)"
+            },
+            {
+              "name": "source_url",
+              "type": "text"
+            },
+            {
+              "name": "tags",
+              "type": "jsonb"
+            },
+            {
+              "name": "doc_text",
+              "type": "text"
+            }
+          ],
+          "indexes": [
+            {
+              "columns": [
+                "title"
+              ],
+              "unique": false
+            }
+          ]
+        }
+      },
+      {
+        "collection": "kb_chunks",
+        "meta": {
+          "icon": "splitscreen"
+        },
+        "schema": {
+          "name": "kb_chunks",
+          "fields": [
+            {
+              "name": "id",
+              "type": "uuid",
+              "primary": true,
+              "default": "uuid_generate_v4()"
+            },
+            {
+              "name": "document_id",
+              "type": "uuid"
+            },
+            {
+              "name": "chunk_index",
+              "type": "integer"
+            },
+            {
+              "name": "content",
+              "type": "text"
+            },
+            {
+              "name": "embedding",
+              "type": "jsonb"
+            }
+          ],
+          "indexes": [
+            {
+              "columns": [
+                "document_id",
+                "chunk_index"
+              ],
+              "unique": true
+            }
+          ],
+          "foreignKeys": [
+            {
+              "columns": [
+                "document_id"
+              ],
+              "references": {
+                "table": "kb_documents",
+                "columns": [
+                  "id"
+                ]
+              },
+              "onDelete": "CASCADE"
+            }
+          ]
+        }
+      },
+      {
+        "collection": "conversations",
+        "meta": {
+          "icon": "forum"
+        },
+        "schema": {
+          "name": "conversations",
+          "fields": [
+            {
+              "name": "id",
+              "type": "uuid",
+              "primary": true,
+              "default": "uuid_generate_v4()"
+            },
+            {
+              "name": "created_at",
+              "type": "timestamp",
+              "default": "now()",
+              "is_nullable": false
+            },
+            {
+              "name": "agent_id",
+              "type": "uuid"
+            },
+            {
+              "name": "channel",
+              "type": "varchar(20)"
+            },
+            {
+              "name": "user_id",
+              "type": "varchar(180)"
+            },
+            {
+              "name": "transcript",
+              "type": "text"
+            },
+            {
+              "name": "outcome",
+              "type": "varchar(40)"
+            },
+            {
+              "name": "rating",
+              "type": "integer"
+            }
+          ],
+          "indexes": [
+            {
+              "columns": [
+                "agent_id",
+                "channel"
+              ],
+              "unique": false
+            }
+          ],
+          "foreignKeys": [
+            {
+              "columns": [
+                "agent_id"
+              ],
+              "references": {
+                "table": "agents",
+                "columns": [
+                  "id"
+                ]
+              },
+              "onDelete": "SET NULL"
+            }
+          ]
+        }
+      },
+      {
+        "collection": "learning_queue",
+        "meta": {
+          "icon": "school"
+        },
+        "schema": {
+          "name": "learning_queue",
+          "fields": [
+            {
+              "name": "id",
+              "type": "uuid",
+              "primary": true,
+              "default": "uuid_generate_v4()"
+            },
+            {
+              "name": "created_at",
+              "type": "timestamp",
+              "default": "now()",
+              "is_nullable": false
+            },
+            {
+              "name": "niche_slug",
+              "type": "varchar(120)"
+            },
+            {
+              "name": "question_text",
+              "type": "text"
+            },
+            {
+              "name": "proposed_answer",
+              "type": "text"
+            },
+            {
+              "name": "evidence_chunks",
+              "type": "jsonb"
+            },
+            {
+              "name": "status",
+              "type": "varchar(20)"
+            }
+          ],
+          "indexes": [
+            {
+              "columns": [
+                "status"
+              ],
+              "unique": false
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

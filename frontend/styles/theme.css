@@ -1,0 +1,7 @@
+:root {
+  --color-primary: #2563eb;
+  --color-accent:  #0ea5e9;
+}
+[data-theme="classic"] { --home-hero-bg: #f8fafc; }
+[data-theme="listingpro"] { --home-hero-bg: #ffffff; }
+[data-theme="magazine"] { --home-hero-bg: #fff7ed; }

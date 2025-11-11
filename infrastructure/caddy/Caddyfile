@@ -1,25 +1,36 @@
 http://www.southsuburbsbest.com {
-    redir https://southsuburbsbest.com{uri} permanent
+redir https://southsuburbsbest.com{uri} permanent
 }
 
 southsuburbsbest.com {
-    encode gzip
-    reverse_proxy ssb_frontend:3000
+encode gzip
+
+# Serve widget static files
+handle_path /widget-api/widget/* {
+root * /srv/widget-files/widget
+file_server
+}
+
+# Widget backend API
+handle /widget-api/* {
+reverse_proxy 178.156.170.185:8081
+}
+
+# Frontend
+reverse_proxy ssb_frontend:3000
 }
 
 admin.southsuburbsbest.com {
-    encode gzip
-    reverse_proxy ssb_directus:8055
+encode gzip
+reverse_proxy ssb_directus:8055
 }
 
 automation.leads2scale.com {
-  encode zstd gzip
-  reverse_proxy n8n:5678
+encode zstd gzip
+reverse_proxy n8n:5678
 }
 
 ai.leads2scale.com {
-  encode zstd gzip
-  reverse_proxy flowise:3000
+encode zstd gzip
+reverse_proxy flowise:3000
 }
-
-
