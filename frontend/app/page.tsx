@@ -1,3 +1,4 @@
+import CityCard from '@/components/CityCard';
 import Link from 'next/link';
 import SearchBar from '@/components/SearchBar';
 import CategoryGrid from '@/components/CategoryGrid';
@@ -86,25 +87,251 @@ export default function Home() {
           </div>
         </div>
       </section>
-      {/* Categories Section */}
-      <section className="py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">
-            Browse by Category
-          </h2>
-          <CategoryGrid />
-        </div>
-      </section>
 
-      {/* Featured Businesses */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">
-            Featured Businesses
-          </h2>
-          <FeaturedBusinesses />
-        </div>
-      </section>
+{/* --- 1. What's Happening In the South Suburbs (Cities) - FINAL LAYOUT --- */}
+<section className="py-16 bg-white">
+  <div className="mx-auto px-4 max-w-5xl">
+    <h2 className="text-3xl font-bold text-center mb-10">
+      What's Happening In the South Suburbs
+    </h2>
+
+    {/* GRID with 3 columns where column 3 is wider */}
+    <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_1.2fr] gap-4">
+
+      {/* COLUMN 1 — TALL ORLAND PARK */}
+      <div className="md:row-span-2">
+        <CityCard
+          href="/city/orland-park"
+          img="/images/orland-park.jpg"
+          title="Orland Park"
+          className="h-[480px] md:h-full"
+        />
+      </div>
+
+      {/* COLUMN 2 — TOP: Frankfort */}
+      <div className="h-[230px]">
+        <CityCard
+          href="/city/frankfort"
+          img="/images/frankfort.jpg"
+          title="Frankfort"
+          className="h-full"
+        />
+      </div>
+
+      {/* COLUMN 3 — TOP: Flossmoor */}
+      <div className="h-[230px]">
+        <CityCard
+          href="/city/flossmoor"
+          img="/images/flossmoor.jpg"
+          title="Flossmoor"
+          className="h-full"
+        />
+      </div>
+
+      {/* COLUMN 2 — BOTTOM: Glenwood */}
+      <div className="h-[230px]">
+        <CityCard
+          href="/city/glenwood"
+          img="/images/glenwood.jpg"
+          title="Glenwood"
+          className="h-full"
+        />
+      </div>
+
+      {/* COLUMN 3 — BOTTOM ROW (two cards inside wider column) */}
+      <div className="h-[230px] grid grid-cols-2 gap-4">
+        <CityCard
+          href="/city/tinley-park"
+          img="/images/tinley-park.jpg"
+          title="Tinley Park"
+          className="h-full"
+        />
+        <CityCard
+          href="/city/crestwood"
+          img="/images/crestwood.jpg"
+          title="Crestwood"
+          className="h-full"
+        />
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+
+            {/* --- 2. Featured or What people are talking About (Testimonial) --- */}
+            <section className="py-16 bg-gray-50">
+                <div className="container mx-auto px-4 flex flex-col lg:flex-row items-center gap-10">
+                    <div className="lg:w-1/2">
+                        <div className="bg-gray-300 h-96 w-full rounded-lg shadow-xl flex items-center justify-center">
+                            [Placeholder for Testimonial Video/Image]
+                        </div>
+                    </div>
+                    <div className="lg:w-1/2">
+                        <h2 className="text-3xl font-bold text-gray-800 mb-6">
+                            Featured or What people are talking About
+                        </h2>
+                        <blockquote className="italic text-lg text-gray-600 mb-4 border-l-4 border-blue-500 pl-4">
+                            &quot;We have exceeded our goals for how many people are going to our website, staying on our website...&quot;
+                        </blockquote>
+                        <p className="font-semibold text-gray-800">Richard Jeans</p>
+                        <p className="text-sm text-gray-500">DX Media, Cortland, OH</p>
+                    </div>
+                </div>
+            </section>
+
+            {/* --- 3. Claim your Business (CTA) --- */}
+            <section className="py-16 bg-white">
+                <div className="container mx-auto px-4 text-center">
+                    <h2 className="text-3xl font-bold text-gray-800 mb-10">
+                        Claim & Get Started Today!
+                    </h2>
+                    <p className="text-gray-600 mb-12">
+                        Nearly 80% of consumers turn to directories with reviews to find a local business.
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div className="flex flex-col items-center p-6 border rounded-lg shadow-md">
+                            <div className="w-16 h-16 mb-4 bg-blue-100 rounded-full flex items-center justify-center">
+                                <span className="text-3xl">✅</span>
+                            </div>
+                            <h3 className="text-xl font-semibold mb-2">Claim</h3>
+                            <p className="text-gray-600 mb-4">
+                                Best way to start managing your business listing is by claiming it so you can update.
+                            </p>
+                            <Link href="/submit" className="text-blue-600 font-medium hover:underline">
+                                Learn More →
+                            </Link>
+                        </div>
+
+                        <div className="flex flex-col items-center p-6 border rounded-lg shadow-md">
+                            <div className="w-16 h-16 mb-4 bg-red-100 rounded-full flex items-center justify-center">
+                                <span className="text-3xl">🚀</span>
+                            </div>
+                            <h3 className="text-xl font-semibold mb-2">Promote</h3>
+                            <p className="text-gray-600 mb-4">
+                                Promote your business to target customers who need your services or products.
+                            </p>
+                            <Link href="/submit" className="text-blue-600 font-medium hover:underline">
+                                Learn More →
+                            </Link>
+                        </div>
+
+                        <div className="flex flex-col items-center p-6 border rounded-lg shadow-md">
+                            <div className="w-16 h-16 mb-4 bg-green-100 rounded-full flex items-center justify-center">
+                                <span className="text-3xl">🎯</span>
+                            </div>
+                            <h3 className="text-xl font-semibold mb-2">Convert</h3>
+                            <p className="text-gray-600 mb-4">
+                                Promote your business to target customers who need your services or products.
+                            </p>
+                            <Link href="/submit" className="text-blue-600 font-medium hover:underline">
+                                Learn More →
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* --- 4. Exclusive & Popular (Businesses) --- */}
+            <section className="py-16 bg-gray-50">
+                <div className="container mx-auto px-4">
+                    <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">
+                        Exclusive & Popular
+                    </h2>
+                    {/* Placeholder Grid for Businesses */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div className="bg-white rounded-lg shadow-xl overflow-hidden">
+                            <img src="/images/placeholder-restaurant.jpg" alt="Restaurant" className="w-full h-48 object-cover" />
+                            <div className="p-4">
+                                <h3 className="text-xl font-bold">The Mark Hotel</h3>
+                                <div className="text-yellow-500 my-2">★★★★☆ (60)</div>
+                                <p className="text-sm text-gray-600">Restaurant, $$$</p>
+                                <p className="text-sm text-gray-600">📍 New York | Open Now</p>
+                            </div>
+                        </div>
+                        <div className="bg-white rounded-lg shadow-xl overflow-hidden">
+                            <img src="/images/placeholder-art.jpg" alt="Art Club" className="w-full h-48 object-cover" />
+                            <div className="p-4">
+                                <h3 className="text-xl font-bold">Arizona Luxury Art Club</h3>
+                                <div className="text-yellow-500 my-2">★★★★★ (2)</div>
+                                <p className="text-sm text-gray-600">Services</p>
+                                <p className="text-sm text-gray-600">📍 Washington | Day Off</p>
+                            </div>
+                        </div>
+                        <div className="bg-white rounded-lg shadow-xl overflow-hidden">
+                            <img src="/images/placeholder-realestate.jpg" alt="Real Estate" className="w-full h-48 object-cover" />
+                            <div className="p-4">
+                                <h3 className="text-xl font-bold">Shoreline Village</h3>
+                                <div className="text-yellow-500 my-2">★★★★★ (3)</div>
+                                <p className="text-sm text-gray-600">Real Estate, $$</p>
+                                <p className="text-sm text-gray-600">📍 Austin | Open Now</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* --- 5. News & Tips Section --- */}
+            <section className="py-16 bg-white">
+                <div className="container mx-auto px-4">
+                    <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">
+                        News & Tips
+                    </h2>
+                    {/* Placeholder Grid for News */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+                            <img src="/images/placeholder-news1.jpg" alt="News" className="w-full h-48 object-cover" />
+                            <div className="p-4">
+                                <p className="font-semibold mb-2">Excited news about arrival fashion.</p>
+                                <div className="flex justify-between text-sm text-gray-500">
+                                    <span>News</span>
+                                    <span>📅 January 1, 2020</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+                            <img src="/images/placeholder-news2.jpg" alt="News" className="w-full h-48 object-cover" />
+                            <div className="p-4">
+                                <p className="font-semibold mb-2">Reduce Unwanted Wrinkles</p>
+                                <div className="flex justify-between text-sm text-gray-500">
+                                    <span>Coffee</span>
+                                    <span>📅 January 1, 2020</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+                            <img src="/images/placeholder-news3.jpg" alt="News" className="w-full h-48 object-cover" />
+                            <div className="p-4">
+                                <p className="font-semibold mb-2">Chemex coffee for two people</p>
+                                <div className="flex justify-between text-sm text-gray-500">
+                                    <span>Coffee</span>
+                                    <span>📅 January 1, 2020</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+            {/* --- 6. Final CTA Section --- */}
+            <section className="py-20 bg-gray-800 text-white">
+                <div className="container mx-auto px-4 flex justify-between items-center bg-cover bg-center"
+                     style={{backgroundImage: 'url(/images/business-cta-bg.jpg)'}}
+                >
+                    <div className="max-w-xl">
+                        <h2 className="text-3xl font-bold mb-3">Are You a Local Business?</h2>
+                        <p className="mb-6">Join the community of hundreds of flourishing local business in your city.</p>
+                        <Link href="/submit" className="bg-blue-600 text-white px-6 py-3 rounded-md font-semibold hover:bg-blue-700 transition">
+                            Get Started
+                        </Link>
+                        <Link href="/submit" className="border border-white text-white px-6 py-3 ml-4 rounded-md font-semibold hover:bg-white hover:text-gray-800 transition">
+                            Claim Your Business
+                        </Link>
+                    </div>
+                </div>
+            </section>
     </main>
   );
 }
