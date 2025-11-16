@@ -11,13 +11,18 @@ The hero section supports multiple display modes:
 - **Color Background**: Solid color or gradient background
 - **Image Background**: Single cover image with overlay
 - **Slideshow**: Automatic slideshow from gallery images
-- **Video Background**: Background video with overlay
+- **Video Background**: Background video with overlay (supports YouTube, Vimeo, and self-hosted)
+
+**Supported Video Sources:**
+- **YouTube**: Paste any YouTube URL (watch, share, embed)
+- **Vimeo**: Paste any Vimeo URL
+- **Self-hosted**: Direct link to .mp4, .webm, or .ogg files
 
 **Fields in Directus:**
 - `hero_type`: `'color' | 'image' | 'slideshow' | 'video'`
 - `hero_color`: Hex color code (e.g., `#2563eb`)
 - `cover_image`: URL to cover image
-- `hero_video_url`: URL to video file
+- `hero_video_url`: URL to video (YouTube, Vimeo, or self-hosted file)
 - `gallery`: Array of image URLs
 
 ### 2. Business Information Sidebar
@@ -39,20 +44,47 @@ Sticky sidebar with quick contact options and business details:
 - Image counter
 - Responsive design
 
-### 4. Business Hours
+### 4. Video Gallery
+- Showcase multiple videos (YouTube, Vimeo, self-hosted)
+- Automatic thumbnail generation for YouTube videos
+- Click to play in modal/lightbox
+- Navigation between videos
+- Optional title and description per video
+- Supports simple URL array or detailed video objects
+
+**Supported Formats:**
+```typescript
+// Simple array of URLs
+videos: [
+  "https://www.youtube.com/watch?v=VIDEO_ID",
+  "https://vimeo.com/VIDEO_ID",
+  "https://example.com/video.mp4"
+]
+
+// Or detailed objects with metadata
+videos: [
+  {
+    url: "https://www.youtube.com/watch?v=VIDEO_ID",
+    title: "Business Tour",
+    description: "Take a virtual tour of our facility"
+  }
+]
+```
+
+### 5. Business Hours
 - Weekly schedule display
 - Current day highlighting
 - Open/Closed status indicator
 - Supports custom hours format
 
-### 5. Amenities & Services
+### 6. Amenities & Services
 Organized sections for:
 - Services Offered
 - Amenities
 - Payment Methods
 - Languages Spoken
 
-### 6. Reviews & Ratings
+### 7. Reviews & Ratings
 - Overall rating display
 - Rating distribution chart
 - Individual reviews with:
@@ -63,14 +95,14 @@ Organized sections for:
 - Write review form
 - Empty state for no reviews
 
-### 7. Contact Form
+### 8. Contact Form
 - Name, email, phone fields
 - Message textarea
 - Form validation
 - Success/error states
 - Loading indicator
 
-### 8. Interactive Map
+### 9. Interactive Map
 - OpenStreetMap embed (free alternative to Google Maps)
 - Location marker
 - Get Directions button
@@ -111,6 +143,7 @@ Organized sections for:
   cover_image?: string;
   hero_video_url?: string;
   gallery?: string[];
+  videos?: VideoItem[] | string[];
 
   // Business Details
   hours?: {
@@ -159,9 +192,10 @@ frontend/app/business/
 ├── [slug]/
 │   └── page.tsx                    # Main business detail page
 └── components/
-    ├── BusinessHero.tsx            # Flexible hero section
+    ├── BusinessHero.tsx            # Flexible hero (YouTube/Vimeo/self-hosted)
     ├── BusinessInfoSidebar.tsx     # Sticky contact sidebar
     ├── BusinessGallery.tsx         # Photo gallery with lightbox
+    ├── BusinessVideos.tsx          # Video gallery (YouTube/Vimeo/self-hosted)
     ├── BusinessHours.tsx           # Operating hours
     ├── BusinessAmenities.tsx       # Services & amenities
     ├── BusinessReviews.tsx         # Reviews & ratings
@@ -203,9 +237,29 @@ frontend/app/business/
 ```
 
 ### Setting up a business with video hero:
+
+**Using YouTube:**
 ```json
 {
   "name": "Adventure Tours",
+  "hero_type": "video",
+  "hero_video_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+}
+```
+
+**Using Vimeo:**
+```json
+{
+  "name": "Creative Studio",
+  "hero_type": "video",
+  "hero_video_url": "https://vimeo.com/123456789"
+}
+```
+
+**Using Self-hosted:**
+```json
+{
+  "name": "Fitness Center",
   "hero_type": "video",
   "hero_video_url": "https://example.com/hero-video.mp4"
 }
@@ -262,6 +316,41 @@ frontend/app/business/
     "instagram": "https://instagram.com/acmeplumbing",
     "twitter": "https://twitter.com/acmeplumbing"
   }
+}
+```
+
+### Adding videos (simple format):
+```json
+{
+  "videos": [
+    "https://www.youtube.com/watch?v=VIDEO_ID_1",
+    "https://www.youtube.com/watch?v=VIDEO_ID_2",
+    "https://vimeo.com/123456789",
+    "https://example.com/promo-video.mp4"
+  ]
+}
+```
+
+### Adding videos with metadata (detailed format):
+```json
+{
+  "videos": [
+    {
+      "url": "https://www.youtube.com/watch?v=VIDEO_ID",
+      "title": "Virtual Tour of Our Facility",
+      "description": "Take a look inside our state-of-the-art facility"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=VIDEO_ID_2",
+      "title": "Customer Testimonial",
+      "description": "Hear what our customers have to say"
+    },
+    {
+      "url": "https://vimeo.com/123456789",
+      "title": "Before & After Gallery",
+      "description": "See the results of our work"
+    }
+  ]
 }
 ```
 

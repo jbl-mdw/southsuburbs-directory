@@ -42,10 +42,104 @@ export default function BusinessHero({
     }
   }, [heroType, slideshowImages.length]);
 
+  // Helper function to detect video type
+  const getVideoType = (url: string) => {
+    if (!url) return null;
+
+    // YouTube patterns
+    if (url.includes('youtube.com/watch') || url.includes('youtu.be/')) {
+      return 'youtube';
+    }
+
+    // Vimeo patterns
+    if (url.includes('vimeo.com/')) {
+      return 'vimeo';
+    }
+
+    // Direct video file patterns
+    if (url.match(/\.(mp4|webm|ogg)$/i)) {
+      return 'direct';
+    }
+
+    // Default to direct if it's a full URL
+    if (url.startsWith('http')) {
+      return 'direct';
+    }
+
+    return null;
+  };
+
+  // Helper to extract YouTube video ID
+  const getYouTubeId = (url: string) => {
+    const patterns = [
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/,
+      /youtube\.com\/embed\/([^&\s]+)/,
+    ];
+
+    for (const pattern of patterns) {
+      const match = url.match(pattern);
+      if (match && match[1]) {
+        return match[1];
+      }
+    }
+    return null;
+  };
+
+  // Helper to extract Vimeo video ID
+  const getVimeoId = (url: string) => {
+    const match = url.match(/vimeo\.com\/(\d+)/);
+    return match ? match[1] : null;
+  };
+
   const renderHeroBackground = () => {
     switch (heroType) {
       case 'video':
         if (heroVideoUrl) {
+          const videoType = getVideoType(heroVideoUrl);
+
+          // YouTube video
+          if (videoType === 'youtube') {
+            const videoId = getYouTubeId(heroVideoUrl);
+            if (videoId) {
+              return (
+                <div className="absolute inset-0">
+                  <iframe
+                    src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1`}
+                    className="w-full h-full"
+                    style={{
+                      border: 0,
+                      pointerEvents: 'none',
+                      transform: 'scale(1.5)', // Zoom to hide YouTube branding
+                    }}
+                    allow="autoplay; encrypted-media"
+                    title="Hero video"
+                  />
+                  <div className="absolute inset-0 bg-black/40" />
+                </div>
+              );
+            }
+          }
+
+          // Vimeo video
+          if (videoType === 'vimeo') {
+            const videoId = getVimeoId(heroVideoUrl);
+            if (videoId) {
+              return (
+                <div className="absolute inset-0">
+                  <iframe
+                    src={`https://player.vimeo.com/video/${videoId}?autoplay=1&loop=1&muted=1&background=1&controls=0`}
+                    className="w-full h-full"
+                    style={{ border: 0 }}
+                    allow="autoplay; fullscreen"
+                    title="Hero video"
+                  />
+                  <div className="absolute inset-0 bg-black/40" />
+                </div>
+              );
+            }
+          }
+
+          // Self-hosted or direct video file
           return (
             <div className="absolute inset-0">
               <video

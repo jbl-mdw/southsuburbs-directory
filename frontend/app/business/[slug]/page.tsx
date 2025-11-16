@@ -6,6 +6,7 @@ import { Business } from '@/types';
 import BusinessHero from '../components/BusinessHero';
 import BusinessInfoSidebar from '../components/BusinessInfoSidebar';
 import BusinessGallery from '../components/BusinessGallery';
+import BusinessVideos from '../components/BusinessVideos';
 import BusinessHours from '../components/BusinessHours';
 import BusinessAmenities from '../components/BusinessAmenities';
 import BusinessReviews from '../components/BusinessReviews';
@@ -47,6 +48,7 @@ export default function BusinessDetailPage() {
         'hero_type',
         'hero_color',
         'hero_video_url',
+        'videos',
         'hours',
         'amenities',
         'services',
@@ -238,6 +240,11 @@ export default function BusinessDetailPage() {
             {/* Gallery */}
             {biz.gallery && biz.gallery.length > 0 && (
               <BusinessGallery images={biz.gallery} businessName={biz.name} />
+            )}
+
+            {/* Videos */}
+            {biz.videos && biz.videos.length > 0 && (
+              <BusinessVideos videos={biz.videos} businessName={biz.name} />
             )}
 
             {/* Services & Amenities */}

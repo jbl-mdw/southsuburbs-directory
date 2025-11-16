@@ -23,6 +23,7 @@ export interface Business {
   hero_type?: 'color' | 'image' | 'slideshow' | 'video';
   hero_color?: string;
   hero_video_url?: string;
+  videos?: VideoItem[] | string[];
   hours?: BusinessHours;
   amenities?: string[];
   services?: string[];
@@ -34,6 +35,12 @@ export interface Business {
   price_range?: string;
   payment_methods?: string[];
   languages?: string[];
+}
+
+export interface VideoItem {
+  url: string;
+  title?: string;
+  description?: string;
 }
 
 export interface BusinessHours {
