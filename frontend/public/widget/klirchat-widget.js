@@ -1,3 +1,293 @@
-/* KlirChat AI Widget - Connected to Voice API */
-(function(){if(typeof window==='undefined'||typeof document==='undefined')return;const ready=fn=>document.readyState==='loading'?document.addEventListener('DOMContentLoaded',fn):fn();ready(function(){try{const API_URL='http://southsuburbsbest.com:8081/api/voice/test';let conv=[];const curr=(()=>{if(document.currentScript)return document.currentScript;const s=document.getElementsByTagName('script');for(let i=s.length-1;i>=0;i--){const src=s[i].getAttribute('src')||'';if(/\/widget\/klirchat-widget\.js(\?.*)?$/.test(src))return s[i]}return null})();let cfg={businessName:'South Suburbs Best',color:'#3366FF'};if(curr){cfg.businessName=curr.dataset.business||cfg.businessName;cfg.color=curr.dataset.color||cfg.color}const style=document.createElement('style');style.textContent=`:root{--kc-color:${cfg.color}}#kc-bubble,#kc-panel{font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial}#kc-bubble{position:fixed;right:20px;bottom:20px;z-index:2147483000;width:56px;height:56px;border-radius:9999px;border:0;cursor:pointer;background:var(--kc-color);color:#fff;display:grid;place-items:center;box-shadow:0 10px 20px rgba(0,0,0,.18);transition:transform .15s ease}#kc-bubble:hover{transform:translateY(-1px)}#kc-bubble svg{width:26px;height:26px}#kc-panel{position:fixed;right:20px;bottom:84px;z-index:2147483000;width:min(92vw,360px);height:500px;background:#fff;color:#0f172a;border-radius:16px;box-shadow:0 18px 40px rgba(0,0,0,.22);overflow:hidden;display:none;flex-direction:column}#kc-panel.kc-open{display:flex}.kc-head{padding:14px 16px;background:linear-gradient(0deg,rgba(0,0,0,.02),rgba(255,255,255,.02)),#fff;border-bottom:1px solid rgba(2,6,23,.06)}.kc-title{font-weight:700;font-size:16px;color:#111827}.kc-sub{font-size:12px;color:#6b7280;margin-top:2px}.kc-msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px}.kc-msg{padding:10px 12px;border-radius:12px;max-width:85%;word-wrap:break-word;font-size:14px;line-height:1.4}.kc-msg-user{background:var(--kc-color);color:#fff;align-self:flex-end}.kc-msg-bot{background:#f3f4f6;color:#111827;align-self:flex-start}.kc-input-wrap{padding:12px;border-top:1px solid rgba(2,6,23,.06);display:flex;gap:8px}.kc-input{flex:1;padding:10px 12px;border:1px solid rgba(2,6,23,.12);border-radius:12px;font-size:14px;outline:none}.kc-input:focus{border-color:var(--kc-color)}.kc-send{padding:10px 16px;background:var(--kc-color);color:#fff;border:0;border-radius:12px;cursor:pointer;font-weight:600;font-size:14px}.kc-send:disabled{opacity:.5;cursor:not-allowed}`;document.head.appendChild(style);const bubble=document.createElement('button');bubble.id='kc-bubble';bubble.setAttribute('aria-label','Open KlirChat');bubble.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-4.219-7.794L22 3l-1.206 5.219A8.963 8.963 0 0 1 21 12Z"/></svg>';const panel=document.createElement('div');panel.id='kc-panel';panel.innerHTML=`<div class="kc-head"><div class="kc-title">${cfg.businessName}</div><div class="kc-sub">Welcome! Type below...</div></div><div class="kc-msgs" id="kc-msgs"><div class="kc-msg kc-msg-bot">You: are you there</div><div class="kc-msg kc-msg-bot">Bot: Thanks! (stub)</div></div><div class="kc-input-wrap"><input type="text" class="kc-input" id="kc-input" placeholder="Type a message..."><button class="kc-send" id="kc-send">Send</button></div>`;document.body.appendChild(bubble);document.body.appendChild(panel);const msgs=document.getElementById('kc-msgs');const input=document.getElementById('kc-input');const sendBtn=document.getElementById('kc-send');function addMsg(txt,isUser){const m=document.createElement('div');m.className='kc-msg '+(isUser?'kc-msg-user':'kc-msg-bot');m.textContent=txt;msgs.appendChild(m);msgs.scrollTop=msgs.scrollHeight}async function send(){const txt=input.value.trim();if(!txt)return;input.value='';sendBtn.disabled=true;addMsg(txt,true);conv.push({role:'user',content:txt});try{const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:txt,conversation:conv})});const data=await res.json();const reply=data.reply||'(no reply)';addMsg(reply,false);conv.push({role:'assistant',content:reply})}catch(e){addMsg('Error: '+e.message,false)}finally{sendBtn.disabled=false;input.focus()}}sendBtn.addEventListener('click',send);input.addEventListener('keypress',e=>{if(e.key==='Enter')send()});bubble.addEventListener('click',()=>panel.classList.toggle('kc-open'));console.log('[KlirChat] AI widget mounted')}catch(e){console.error('[KlirChat] init error:',e)}})}
-)();
+/* KlirChat Widget - Backend Connected Version */
+(function () {
+  if (typeof window === "undefined" || typeof document === "undefined") return;
+
+  function ready(fn) {
+    if (document.readyState === "complete" || document.readyState === "interactive") {
+      fn();
+    } else {
+      document.addEventListener("DOMContentLoaded", fn);
+    }
+  }
+
+  ready(function () {
+    try {
+      // Avoid double init
+      if (document.getElementById("klirchat-bubble")) return;
+
+      // ---- Find the script tag to read data-api-url ----
+      var scripts = document.getElementsByTagName("script");
+      var apiUrl = null;
+      for (var i = scripts.length - 1; i >= 0; i--) {
+        var s = scripts[i];
+        if (s.src && s.src.indexOf("klirchat-widget.js") !== -1) {
+          apiUrl = s.getAttribute("data-api-url") || null;
+          break;
+        }
+      }
+
+      // ---- Styles (scoped to kc-* only) ----
+      var style = document.createElement("style");
+      style.id = "klirchat-style";
+      style.textContent = `
+        .kc-panel, .kc-bubble {
+          font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        .kc-bubble {
+          position: fixed;
+          right: 24px;
+          bottom: 24px;
+          width: 64px;
+          height: 64px;
+          border-radius: 999px;
+          border: none;
+          cursor: pointer;
+          box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+          background: #2563eb;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #fff;
+          font-size: 26px;
+          z-index: 9999;
+        }
+
+        .kc-bubble:focus {
+          outline: 2px solid #93c5fd;
+          outline-offset: 2px;
+        }
+
+        .kc-panel {
+          position: fixed;
+          right: 24px;
+          bottom: 100px;
+          width: 360px;
+          max-width: calc(100% - 32px);
+          height: 480px;
+          max-height: calc(100% - 96px);
+          background: #ffffff;
+          border-radius: 18px;
+          box-shadow: 0 20px 40px rgba(15,23,42,0.35);
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+          z-index: 9998;
+        }
+
+        .kc-panel-hidden {
+          display: none;
+        }
+
+        .kc-header {
+          background: #1d4ed8;
+          color: #ffffff;
+          padding: 12px 16px;
+        }
+
+        .kc-title {
+          font-size: 15px;
+          font-weight: 700;
+        }
+
+        .kc-sub {
+          font-size: 12px;
+          opacity: 0.9;
+          margin-top: 2px;
+        }
+
+        .kc-msgs {
+          flex: 1;
+          padding: 12px;
+          overflow-y: auto;
+          background: #f1f5f9;
+        }
+
+        .kc-msg {
+          margin-bottom: 8px;
+          max-width: 90%;
+          border-radius: 14px;
+          padding: 8px 10px;
+          font-size: 13px;
+          line-height: 1.35;
+        }
+
+        .kc-msg-bot {
+          background: #e2e8f0;
+          color: #111827;
+          align-self: flex-start;
+        }
+
+        .kc-msg-user {
+          background: #2563eb;
+          color: #ffffff;
+          margin-left: auto;
+          align-self: flex-end;
+        }
+
+        .kc-input-wrap {
+          border-top: 1px solid #e5e7eb;
+          padding: 8px;
+          display: flex;
+          gap: 8px;
+          background: #ffffff;
+        }
+
+        .kc-input {
+          flex: 1;
+          border-radius: 999px;
+          border: 1px solid #d1d5db;
+          padding: 8px 12px;
+          font-size: 13px;
+        }
+
+        .kc-input:focus {
+          outline: none;
+          border-color: #60a5fa;
+          box-shadow: 0 0 0 1px #bfdbfe;
+        }
+
+        .kc-send {
+          border-radius: 999px;
+          border: none;
+          padding: 8px 14px;
+          font-size: 13px;
+          font-weight: 600;
+          cursor: pointer;
+          background: #2563eb;
+          color: #ffffff;
+        }
+
+        .kc-send:disabled {
+          opacity: 0.6;
+          cursor: default;
+        }
+
+        @media (max-width: 640px) {
+          .kc-panel {
+            right: 12px;
+            bottom: 90px;
+            width: calc(100% - 24px);
+            height: 420px;
+          }
+          .kc-bubble {
+            right: 16px;
+            bottom: 16px;
+          }
+        }
+      `;
+      document.head.appendChild(style);
+
+      // ---- Panel HTML ----
+      var panel = document.createElement("div");
+      panel.id = "klirchat-panel";
+      panel.className = "kc-panel kc-panel-hidden";
+      panel.innerHTML = `
+        <div class="kc-header">
+          <div class="kc-title">South Suburbs Best</div>
+          <div class="kc-sub">Welcome! Type below...</div>
+        </div>
+        <div class="kc-msgs" id="kc-msgs"></div>
+        <div class="kc-input-wrap">
+          <input type="text" class="kc-input" id="kc-input" placeholder="Type a message..." />
+          <button class="kc-send" id="kc-send">Send</button>
+        </div>
+      `;
+      document.body.appendChild(panel);
+
+      // ---- Bubble ----
+      var bubble = document.createElement("button");
+      bubble.id = "klirchat-bubble";
+      bubble.className = "kc-bubble";
+      bubble.setAttribute("aria-label", "Open KlirChat");
+      bubble.innerHTML = "💬";
+      document.body.appendChild(bubble);
+
+      var msgs   = document.getElementById("kc-msgs");
+      var input  = document.getElementById("kc-input");
+      var sendBtn = document.getElementById("kc-send");
+
+      // Conversation history to send to backend
+      var conv = [
+        { role: "system", content: "You are KlirChat, the assistant for South Suburbs Best." }
+      ];
+
+      function appendMessage(text, from) {
+        var div = document.createElement("div");
+        div.className = "kc-msg " + (from === "user" ? "kc-msg-user" : "kc-msg-bot");
+        div.textContent = text;
+        msgs.appendChild(div);
+        msgs.scrollTop = msgs.scrollHeight;
+      }
+
+      async function sendToBackend(userText) {
+        // No backend configured: fallback stub
+        if (!apiUrl) {
+          appendMessage('Backend not configured yet. Stub bot: I received — "' + userText + '"', "bot");
+          return;
+        }
+
+        conv.push({ role: "user", content: userText });
+
+        try {
+          sendBtn.disabled = true;
+          appendMessage("Thinking...", "bot");
+
+          var res = await fetch(apiUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ messages: conv })
+          });
+
+          if (!res.ok) {
+            throw new Error("HTTP " + res.status);
+          }
+
+          var data = await res.json();
+          var reply =
+            (data && (data.reply || data.message)) ||
+            (data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) ||
+            "Sorry, I didn't get a response from the server.";
+
+          conv.push({ role: "assistant", content: reply });
+          appendMessage(reply, "bot");
+        } catch (e) {
+          console.error("[KlirChat] backend error:", e);
+          appendMessage("Sorry, something went wrong talking to the server.", "bot");
+        } finally {
+          sendBtn.disabled = false;
+          input.focus();
+        }
+      }
+
+      function handleSend() {
+        var text = (input.value || "").trim();
+        if (!text) return;
+        appendMessage(text, "user");
+        input.value = "";
+        sendToBackend(text);
+      }
+
+      sendBtn.addEventListener("click", handleSend);
+      input.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          handleSend();
+        }
+      });
+
+      bubble.addEventListener("click", function () {
+        panel.classList.toggle("kc-panel-hidden");
+        if (!panel.classList.contains("kc-panel-hidden")) {
+          input.focus();
+        }
+      });
+
+      // Initial greeting
+      appendMessage("Hi! I’m KlirChat. Ask me about local businesses in the South Suburbs.", "bot");
+      console.log("[KlirChat] widget mounted. API URL:", apiUrl || "(none set)");
+    } catch (e) {
+      console.error("[KlirChat] init error:", e);
+    }
+  });
+})();

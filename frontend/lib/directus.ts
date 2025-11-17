@@ -68,3 +68,71 @@ export async function getFeaturedPostsForCity() {
   });
   return Array.isArray((data as any)?.data) ? (data as any).data : [];
 }
+// ======================
+// BUSINESS HELPERS
+// ======================
+
+export type Business = {
+  id: string;
+  slug: string;
+  name: string;
+  website?: string | null;
+  services_text?: string | null;
+  tagline?: string | null;
+  description?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  address1?: string | null;
+  city?: string | null;
+  state?: string | null;
+  postal_code?: string | null;
+  website_root?: string | null;
+};
+
+export async function getBusinessBySlug(
+  slug: string
+): Promise<Business | null> {
+  if (!slug) return null;
+
+  const data = await directusGet("businesses", {
+    filter: { slug: { _eq: slug } },
+    limit: 1,
+    fields: [
+      "id",
+      "slug",
+      "name",
+      "website",
+      "services_text",
+      "tagline",
+      "description",
+      "phone",
+      "email",
+      "address1",
+      "city",
+      "state",
+      "postal_code",
+      "website_root",
+    ],
+  });
+
+  const rows = (data as any)?.data;
+  if (!Array.isArray(rows) || rows.length === 0) return null;
+
+  return rows[0] as Business;
+}
+
+export async function getAllBusinessSlugs(): Promise<string[]> {
+  const data = await directusGet("businesses", {
+    fields: ["slug"],
+    limit: -1,
+  });
+
+  const rows = (data as any)?.data;
+  if (!Array.isArray(rows)) return [];
+
+  return rows
+    .map(
+      (row: any) => (row?.slug as string | undefined)?.trim().toLowerCase()
+    )
+    .filter((slug): slug is string => !!slug);
+}

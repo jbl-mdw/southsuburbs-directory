@@ -1,42 +1,19 @@
-southsuburbsbest.com, www.southsuburbsbest.com {
-    encode zstd gzip
-    
-    # Widget API proxy - serves widget over HTTPS
-    handle_path /widget-api/* {
-        reverse_proxy 178.156.170.185:8081
-    }
+{
+    email youremail@example.com
+}
+
 southsuburbsbest.com {
     encode gzip
-
-    # This is the new rule to fix the widget
-    @widget_files {
-        path /widget-api/widget/*
-    }
-
-    handle @widget_files {
-        # This removes the unwanted '/widget-api' part of the URL
-        uri strip_prefix /widget-api 
-        # This sends the corrected request to the widget backend (FastAPI)
-        reverse_proxy 178.156.170.185:8081
-    }
-
-    # This is the original line that sends everything else to the Next.js frontend
-    reverse_proxy ssb_frontend:3000
-}    
     reverse_proxy ssb_frontend:3000 {
         header_up Host {host}
-        header_up X-Real-IP {remote_host}
-        header_up X-Forwarded-For {remote_host}
-        header_up X-Forwarded-Host {host}
         header_up X-Forwarded-Proto https
-        header_up Accept-Encoding ""
-        transport http {
-            versions 1.1
-        }
     }
 }
 
-admin.southsuburbsbest.com {
-    encode zstd gzip
-    reverse_proxy ssb_directus:8055
+automation.leads2scale.com {
+    reverse_proxy n8n:5678
+}
+
+ai.leads2scale.com {
+    reverse_proxy flowise:3000
 }
