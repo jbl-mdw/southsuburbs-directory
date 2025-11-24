@@ -1,0 +1,35 @@
+'use client';
+import React from 'react';
+
+interface BusinessAmenitiesProps {
+  services?: string[] | string | null;
+  amenities?: string[] | string | null;
+  paymentMethods?: string[] | string | null;
+  languages?: string[] | string | null;
+}
+
+function normalizeList(value?: string[] | string | null): string[] {
+  if (!value) return [];
+  if (Array.isArray(value)) return value.filter(Boolean);
+  return value.split(',').map((v) => v.trim()).filter(Boolean);
+}
+
+export default function BusinessAmenities({ services, amenities, paymentMethods, languages }: BusinessAmenitiesProps) {
+  const serviceList = normalizeList(services);
+  const amenityList = normalizeList(amenities);
+  const paymentList = normalizeList(paymentMethods);
+  const languageList = normalizeList(languages);
+  const hasAnything = serviceList.length || amenityList.length || paymentList.length || languageList.length;
+  if (!hasAnything) return null;
+  return (
+    <section className="bg-white rounded-xl shadow-lg p-6">
+      <h2 className="text-2xl font-bold text-gray-900 mb-4">Services</h2>
+      <div className="space-y-4">
+        {serviceList.length > 0 && <div><h3 className="font-semibold mb-2">Services</h3><ul className="list-disc pl-5">{serviceList.map((item) => <li key={item}>{item}</li>)}</ul></div>}
+        {amenityList.length > 0 && <div><h3 className="font-semibold mb-2">Amenities</h3><ul className="list-disc pl-5">{amenityList.map((item) => <li key={item}>{item}</li>)}</ul></div>}
+        {paymentList.length > 0 && <div><h3 className="font-semibold mb-2">Payment</h3><ul className="list-disc pl-5">{paymentList.map((item) => <li key={item}>{item}</li>)}</ul></div>}
+        {languageList.length > 0 && <div><h3 className="font-semibold mb-2">Languages</h3><ul className="list-disc pl-5">{languageList.map((item) => <li key={item}>{item}</li>)}</ul></div>}
+      </div>
+    </section>
+  );
+}

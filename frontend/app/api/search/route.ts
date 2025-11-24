@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+export const dynamic = 'force-dynamic';
+
 const MEILI_URL = process.env.NEXT_PUBLIC_MEILISEARCH_URL!;
 const MEILI_KEY = process.env.NEXT_PUBLIC_MEILISEARCH_KEY!;
 

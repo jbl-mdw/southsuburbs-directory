@@ -11,7 +11,12 @@ async function getCategories() {
   const base = process.env.NEXT_PUBLIC_DIRECTUS_URL || process.env.DIRECTUS_URL;
   const res = await fetch(
     `${base}/items/categories?limit=60&sort=name&fields=id,name,slug`,
-    { cache: "no-store", headers }
+    const res = await fetch(url, {
+  cache: "force-cache",
+  next: { revalidate: 300 },
+  headers,
+});
+
   );
   const json = await res.json();
   return json.data || [];
@@ -21,7 +26,12 @@ async function getCities() {
   const base = process.env.NEXT_PUBLIC_DIRECTUS_URL || process.env.DIRECTUS_URL;
   const res = await fetch(
     `${base}/items/cities?limit=12&filter[is_featured][_eq]=true&sort=name&fields=name,slug`,
-    { cache: "no-store", headers }
+    const res = await fetch(url, {
+  cache: "force-cache",
+  next: { revalidate: 300 },
+  headers,
+});
+
   );
   const json = await res.json();
   return json.data || [];

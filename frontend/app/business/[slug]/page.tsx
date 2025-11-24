@@ -1,138 +1,74 @@
 import { notFound } from "next/navigation";
-import {
-  getBusinessBySlug,
-  getAllBusinessSlugs,
-  type Business,
-} from "@/lib/directus";
+import { fetchBusinessBySlug } from "@/lib/directus";
 
-export const revalidate = 60;
-
-type PageParams = {
-  params: {
-    slug: string;
-  };
-};
-
-export async function generateStaticParams() {
-  const slugs = await getAllBusinessSlugs();
-  return slugs.map((slug) => ({ slug }));
+interface PageProps {
+  params: { slug: string };
 }
 
-export default async function BusinessPage({ params }: PageParams) {
-  const slug = decodeURIComponent(params.slug);
-  const business = await getBusinessBySlug(slug);
+export default async function BusinessPage({ params }: PageProps) {
+  const { slug } = params;
+
+  // Server-side fetch from Directus (no CORS issues)
+  const business = await fetchBusinessBySlug(slug);
 
   if (!business) {
-    notFound();
+    return (
+      <main className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+        <div className="bg-white rounded-2xl shadow-md p-6 max-w-md w-full text-center">
+          <div className="text-5xl mb-3">😕</div>
+          <h1 className="text-xl font-semibold mb-2">Business Not Found</h1>
+          <p className="text-gray-600 mb-4">
+            This listing may have been removed or is not public yet.
+          </p>
+          <a
+            href="/explore"
+            className="inline-block px-4 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700"
+          >
+            ← Back to Explore
+          </a>
+        </div>
+      </main>
+    );
   }
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-8">
-      {/* Header */}
-      <section className="border-b pb-6">
-        <h1 className="text-3xl font-semibold tracking-tight">
-          {business.name}
-        </h1>
+    <main className="min-h-screen bg-gray-50 px-4 py-8">
+      <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-md p-6">
+        <h1 className="text-2xl font-bold mb-2">{business.name}</h1>
 
-        {business.tagline && (
-          <p className="mt-2 text-lg text-gray-600">{business.tagline}</p>
-        )}
-
-        {business.city && business.state && (
-          <p className="mt-1 text-sm text-gray-500">
-            {business.city}, {business.state}
-          </p>
-        )}
-      </section>
-
-      {/* Main content + sidebar */}
-      <section className="mt-6 grid gap-8 md:grid-cols-[2fr,1fr]">
-        {/* Left: description + services */}
-        <div className="space-y-4">
-          {business.description && (
-            <p className="text-gray-700 leading-relaxed">
-              {business.description}
-            </p>
-          )}
-
-          {business.services_text && (
+        <div className="text-sm text-gray-600 mb-4 space-y-1">
+          {business.address_line1 && <div>{business.address_line1}</div>}
+          {(business.city || business.state || business.zipcode) && (
             <div>
-              <h2 className="mb-2 text-lg font-semibold">Services</h2>
-              <p className="whitespace-pre-line text-gray-700">
-                {business.services_text}
-              </p>
+              {business.city}, {business.state} {business.zipcode}
             </div>
           )}
-        </div>
-
-        {/* Right: contact card */}
-        <aside className="space-y-3 rounded-lg border bg-gray-50 p-4 text-sm text-gray-700">
-          {business.phone && (
-            <div>
-              <div className="font-semibold">Phone</div>
-              <a
-                href={`tel:${business.phone}`}
-                className="text-blue-600 hover:underline"
-              >
-                {business.phone}
-              </a>
-            </div>
-          )}
-
-          {business.email && (
-            <div>
-              <div className="font-semibold">Email</div>
-              <a
-                href={`mailto:${business.email}`}
-                className="text-blue-600 hover:underline break-all"
-              >
-                {business.email}
-              </a>
-            </div>
-          )}
-
-          {(business.address1 ||
-            business.city ||
-            business.state ||
-            business.postal_code) && (
-            <div>
-              <div className="font-semibold">Address</div>
-              <p className="whitespace-pre-line">
-                {business.address1 && (
-                  <>
-                    {business.address1}
-                    <br />
-                  </>
-                )}
-                {(business.city || business.state || business.postal_code) && (
-                  <>
-                    {business.city}
-                    {business.city &&
-                    (business.state || business.postal_code)
-                      ? ", "
-                      : ""}
-                    {business.state} {business.postal_code}
-                  </>
-                )}
-              </p>
-            </div>
-          )}
-
+          {business.phone && <div>📞 {business.phone}</div>}
           {business.website && (
             <div>
-              <div className="font-semibold">Website</div>
+              🌐{" "}
               <a
-                href={business.website}
+                href={
+                  business.website.startsWith("http")
+                    ? business.website
+                    : `https://${business.website}`
+                }
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-600 hover:underline break-all"
+                className="text-blue-600 underline"
               >
                 {business.website}
               </a>
             </div>
           )}
-        </aside>
-      </section>
+        </div>
+
+        {business.description && (
+          <div className="border-t pt-4 mt-4 text-gray-800">
+            <p>{business.description}</p>
+          </div>
+        )}
+      </div>
     </main>
   );
 }

@@ -1,27 +1,37 @@
+export const dynamic = 'force-dynamic'; 
+
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
-  try {
-    const searchParams = request.nextUrl.searchParams;
-    const all = searchParams.get('all');
-    
-    const filter = all ? '' : '?filter[is_featured][_eq]=true&sort=name&limit=20';
-    const allParams = all ? '?sort=name&limit=100' : '';
-    
-    const res = await fetch(
-      `${process.env.DIRECTUS_URL}/items/cities${all ? allParams : filter}`,
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.DIRECTUS_TOKEN}`,
-        },
-        cache: 'no-store',
-      }
-    );
+  const { searchParams } = request.nextUrl;
+  const searchQuery = searchParams.get('q');
 
-    const data = await res.json();
-    return NextResponse.json(data);
+  let filter = {};
+
+  if (searchQuery) {
+    // NOTE: Replace this mock filter with your actual Directus filter logic
+    filter = { city_name: { _contains: searchQuery } };
+  }
+
+  try {
+    // --- TEMPORARY MOCK DATA FOR TESTING API ROUTE SUCCESS ---
+    const allCities = [
+        { slug: 'palos-park', city_name: 'Palos Park' },
+        { slug: 'orland-park', city_name: 'Orland Park' },
+        { slug: 'lansing', city_name: 'Lansing' },
+    ];
+
+    const filteredCities = searchQuery
+      ? allCities.filter(city => 
+          city.city_name.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      : allCities;
+    // --------------------------------------------------------
+
+    return NextResponse.json(filteredCities); 
+
   } catch (error) {
-    console.error('Cities API error:', error);
-    return NextResponse.json({ data: [] }, { status: 500 });
+    console.error('API Error fetching cities:', error);
+    return new NextResponse('Internal Server Error', { status: 500 });
   }
 }
