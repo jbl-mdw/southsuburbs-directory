@@ -54,7 +54,9 @@ function QuoteFormContent() {
 
         const res = await fetch(url, {
           method: 'GET',
-          cache: 'no-store',
+          cache: "force-cache",
+next: { revalidate: 300 },
+
         });
 
         if (res.ok) {

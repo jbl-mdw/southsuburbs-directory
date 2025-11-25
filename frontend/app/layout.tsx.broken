@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Navbar from "@/components/navbar/Navbar";
-import Footer from "@/components/Footer";
+import Navbar from "@/components/Navigation";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "South Suburbs Best",
@@ -18,7 +18,14 @@ export default function RootLayout({
       <body className="min-h-screen bg-white">
         <Navbar />
         {children}
-        <Footer />
+
+        {/* KlirChat widget */}
+        <Script
+          src="/widget/klirchat-widget.js"
+          strategy="afterInteractive"
+          // 🔴 IMPORTANT: REPLACE THIS WITH YOUR REAL BACKEND ENDPOINT
+          data-api-url="https://YOUR-BACKEND-DOMAIN-HERE/api/chat"
+        />
       </body>
     </html>
   );

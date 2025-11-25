@@ -5,7 +5,11 @@ const headers: HeadersInit = process.env.DIRECTUS_TOKEN ? { Authorization: `Bear
 
 async function getCategories() {
   if (!DIRECTUS_BASE) return [];
-  const res = await fetch(`${DIRECTUS_BASE}/items/categories?limit=60&sort=name&fields=id,name,slug,parent_category_id`, { cache: "force-cache", next: { revalidate: 300 }, headers });
+  const res = await fetch(`${DIRECTUS_BASE}/items/categories?limit=60&sort=name&fields=id,name,slug,parent_category_id`, { 
+    cache: "force-cache", 
+    next: { revalidate: 300 }, 
+    headers 
+  });
   if (!res.ok) return [];
   const json = await res.json().catch(() => null);
   return json?.data || [];

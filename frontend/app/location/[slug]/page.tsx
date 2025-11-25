@@ -6,7 +6,13 @@ async function getCity(slug: string) {
   const base = process.env.DIRECTUS_URL!;
   const token = process.env.DIRECTUS_STATIC_TOKEN!;
   const url = `${base}/items/cities?filter[slug][_eq]=${encodeURIComponent(slug)}&limit=1`;
-  const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` }, cache: "no-store" });
+  const res = await fetch(url, {
+  headers: { Authorization: `Bearer ${token}` },
+  cache: "force-cache",
+  next: { revalidate: 300 },
+});
+
+
   if (!res.ok) return null;
   const json = await res.json();
   return json?.data?.[0] ?? null;

@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
-
+export const dynamic = 'force-dynamic';
+export const revalidate = 3600; // Revalidate every hour
 export const revalidate = 3600; // rebuild sitemap every hour
 
 async function getCities() {
@@ -8,8 +9,10 @@ async function getCities() {
   const url = `${base}/items/cities?fields=slug,updated_at&limit=-1&sort=slug`;
   const res = await fetch(url, {
     headers: { Authorization: `Bearer ${token}` },
-    cache: "no-store",
-  });
+  cache: "force-cache",
+  next: { revalidate: 300 },
+});
+
   if (!res.ok) return [];
   const json = await res.json();
   return Array.isArray(json?.data) ? json.data : [];
