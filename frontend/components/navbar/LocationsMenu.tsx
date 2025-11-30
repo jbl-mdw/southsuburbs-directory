@@ -1,19 +1,24 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+
 interface City {
   slug: string;
   city_name?: string;
   name?: string;
 }
+
 interface LocationsMenuProps {
   cities: City[];
   setIsOpen: (open: boolean) => void;
 }
+
 const LocationsMenu = ({ cities, setIsOpen }: LocationsMenuProps) => {
   const [searchTerm, setSearchTerm] = useState('');
+  console.log("LocationsMenu received cities:", cities);
   const [searchResults, setSearchResults] = useState<City[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+
   useEffect(() => {
     if (!searchTerm) {
       setSearchResults([]);
@@ -35,12 +40,15 @@ const LocationsMenu = ({ cities, setIsOpen }: LocationsMenuProps) => {
     }, 300);
     return () => clearTimeout(timer);
   }, [searchTerm]);
+
   const displayCities = searchTerm ? searchResults : cities;
   const citiesPerColumn = Math.ceil(displayCities.length / 3);
   const column1 = displayCities.slice(0, citiesPerColumn);
   const column2 = displayCities.slice(citiesPerColumn, citiesPerColumn * 2);
   const column3 = displayCities.slice(citiesPerColumn * 2);
+
   const getCityName = (city: City) => city.city_name || city.name || city.slug;
+
   return (
     <div style={{ padding: '20px', backgroundColor: 'white', width: '750px', borderRadius: '8px' }}>
       <input
@@ -98,4 +106,5 @@ const LocationsMenu = ({ cities, setIsOpen }: LocationsMenuProps) => {
     </div>
   );
 };
+
 export default LocationsMenu;

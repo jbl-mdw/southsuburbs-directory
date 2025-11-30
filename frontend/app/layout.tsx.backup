@@ -1,28 +1,25 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
-import "@/styles/theme.css";
-import { site } from "@/config/site";
-import NavbarA from "@/components/navbar/NavbarA";
+import Navbar from "@/components/navbar/Navbar";
+import Footer from "@/components/Footer";
+import ChatProvider from "@/components/ChatProvider"; // <--- Import the Bridge
 
-const inter = Inter({ subsets: ["latin"] });
-
-export const metadata: Metadata = {
-  title: `${site.brand.name} - Local Business Directory`,
-  description: "Find the best local businesses in Chicago South Suburbs",
+export const metadata = {
+  title: "South Suburbs Best",
+  description: "Find the best local businesses in Chicago's South Suburbs",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
-      <body className={inter.className} data-theme={site.layout.homeVariant}>
-        <NavbarA />
+      <body className="min-h-screen bg-white">
+        <Navbar />
         {children}
-        <footer className="bg-gray-800 text-white py-8 mt-16">
-          <div className="container mx-auto px-4 text-center">
-            <p>© {new Date().getFullYear()} {site.brand.name}. All rights reserved.</p>
-          </div>
-        </footer>
+        <Footer />
+        <ChatProvider /> {/* <--- Activate the Bridge */}
       </body>
     </html>
   );

@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* --- LGR CHAT WIDGET Z-INDEX FIX --- */
+/* This forces the widget and its associated popups to appear above all other site content. */
+lgr-chat-widget {
+    z-index: 2147483647 !important; /* Max possible z-index */
+}

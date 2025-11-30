@@ -2,34 +2,38 @@ export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 
 const PRIMARY_CITIES = [
-  { slug: 'flossmoor', city_name: 'Flossmoor' },
-  { slug: 'glenwood', city_name: 'Glenwood' },
-  { slug: 'frankfort', city_name: 'Frankfort' },
-  { slug: 'orland-park', city_name: 'Orland Park' },
-  { slug: 'tinley-park', city_name: 'Tinley Park' },
-  { slug: 'homewood', city_name: 'Homewood' },
-  { slug: 'lynwood', city_name: 'Lynwood' },
-  { slug: 'country-club-hills', city_name: 'Country Club Hills' },
-  { slug: 'olympia-fields', city_name: 'Olympia Fields' },
-  { slug: 'hazel-crest', city_name: 'Hazel Crest' },
-  { slug: 'university-park', city_name: 'University Park' },
-  { slug: 'matteson', city_name: 'Matteson' }
+  { slug: 'flossmoor', name: 'Flossmoor' },
+  { slug: 'glenwood', name: 'Glenwood' },
+  { slug: 'frankfort', name: 'Frankfort' },
+  { slug: 'orland-park', name: 'Orland Park' },
+  { slug: 'tinley-park', name: 'Tinley Park' },
+  { slug: 'homewood', name: 'Homewood' },
+  { slug: 'lynwood', name: 'Lynwood' },
+  { slug: 'country-club-hills', name: 'Country Club Hills' },
+  { slug: 'olympia-fields', name: 'Olympia Fields' },
+  { slug: 'hazel-crest', name: 'Hazel Crest' },
+  { slug: 'university-park', name: 'University Park' },
+  { slug: 'matteson', name: 'Matteson' }
 ];
 
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
   const searchQuery = searchParams.get('q');
-
-  try {
-    const filteredCities = searchQuery
-      ? PRIMARY_CITIES.filter(city =>
-          city.city_name.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-      : PRIMARY_CITIES;
-
-    return NextResponse.json(filteredCities);
-  } catch (error) {
-    console.error('API Error fetching cities:', error);
-    return new NextResponse('Internal Server Error', { status: 500 });
+  if (!searchQuery) {
+    return NextResponse.json(PRIMARY_CITIES);
   }
+  try {
+    const url = `https://southsuburbsbest.com/directus/items/cities?limit=-1&fields=slug,name&filter[name][_icontains]=${encodeURIComponent(searchQuery)}`;
+    const res = await fetch(url);
+    if (res.ok) {
+      const json = await res.json();
+      return NextResponse.json(json?.data || []);
+    }
+  } catch (error) {
+    console.error('Directus error:', error);
+  }
+  const filtered = PRIMARY_CITIES.filter(city =>
+    city.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+  return NextResponse.json(filtered);
 }
