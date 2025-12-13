@@ -53,11 +53,9 @@ function QuoteFormContent() {
           '&fields=id,name';
 
         const res = await fetch(url, {
-          method: 'GET',
-          cache: "force-cache",
-next: { revalidate: 300 },
-
-        });
+  method: 'GET',
+  next: { revalidate: 300 },
+});
 
         if (res.ok) {
           const data = await res.json();

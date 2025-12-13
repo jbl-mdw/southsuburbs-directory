@@ -1,14 +1,14 @@
 import NavbarClient from "./NavbarClient";
 
 const DIRECTUS_BASE = process.env.NEXT_PUBLIC_DIRECTUS_URL || process.env.DIRECTUS_URL;
-const headers: HeadersInit = process.env.DIRECTUS_TOKEN ? { Authorization: `Bearer ${process.env.DIRECTUS_TOKEN}` } : {};
+const DIRECTUS_HEADERS: HeadersInit = process.env.DIRECTUS_TOKEN ? { Authorization: `Bearer ${process.env.DIRECTUS_TOKEN}` } : {};
 
 async function getCategories() {
   if (!DIRECTUS_BASE) return [];
+
   const res = await fetch(`${DIRECTUS_BASE}/items/categories?limit=60&sort=name&fields=id,name,slug,parent_category_id`, {
-    cache: "force-cache",
-    next: { revalidate: 300 },
-    headers
+    next: { revalidate: 300 },      // ← Add 2 more spaces
+    headers: DIRECTUS_HEADERS       // ← Add 2 more spaces
   });
   if (!res.ok) return [];
   const json = await res.json().catch(() => null);

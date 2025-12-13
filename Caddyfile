@@ -1,22 +1,49 @@
 southsuburbsbest.com {
     encode gzip
-    
     @health path /health.txt
-    handle @health { 
-        respond "ok" 200 
+    handle @health {
+        respond "ok" 200
     }
-    
+    # Directus API (PUBLIC - needed for frontend data fetching)
+    handle_path /directus/* {
+        reverse_proxy directus:8055
+    }
+
+    handle_path /utils/* {
+    reverse_proxy 127.0.0.1:8055
+    }
+     
+    handle_path /assets/* {
+    reverse_proxy 127.0.0.1:8055
+    }
+  
+    # Widget and API routes
     handle_path /widget/* {
         reverse_proxy host.docker.internal:8081
     }
-    
     handle_path /api/widget/* {
         reverse_proxy host.docker.internal:8081
     }
-    
-    reverse_proxy frontend:3000
+    # Frontend (catch-all) - UPDATED TO PORT 3001
+    reverse_proxy host.docker.internal:3001
 }
 
+# Directus Admin Panel
+admin.southsuburbsbest.com {
+    reverse_proxy directus:8055
+}
+
+# MeiliSearch
+search.southsuburbsbest.com {
+    reverse_proxy meilisearch:7700
+}
+
+# Uptime Kuma
+status.southsuburbsbest.com {
+    reverse_proxy uptimekuma:3001
+}
+
+# N8N Automation
 automation.leads2scale.com {
     reverse_proxy n8n:5678
 }

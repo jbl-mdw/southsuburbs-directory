@@ -1,19 +1,34 @@
 {
-    email youremail@example.com
+  email admin@southsuburbsbest.com
 }
 
 southsuburbsbest.com {
-    encode gzip
-    reverse_proxy ssb_frontend:3000 {
-        header_up Host {host}
-        header_up X-Forwarded-Proto https
-    }
+  handle /directus/* {
+    uri strip_prefix /directus
+    reverse_proxy ssb_directus:8055
+  }
+  
+  handle {
+    reverse_proxy ssb_frontend:3000
+  }
+}
+
+admin.southsuburbsbest.com {
+  reverse_proxy ssb_directus:8055
+}
+
+agent.klirtrak.com {
+  reverse_proxy lgr-nginx:80
 }
 
 automation.leads2scale.com {
-    reverse_proxy n8n:5678
+  reverse_proxy n8n:5678
 }
 
 ai.leads2scale.com {
-    reverse_proxy flowise:3000
+  reverse_proxy flowise:3000
+}
+
+klirtrak.com, www.klirtrak.com {
+  reverse_proxy lgr-nginx:80
 }

@@ -1,33 +1,36 @@
 name: southsuburbs
 services:
-  frontend:
-
+frontend:
     container_name: ssb_frontend
-
     build:
-
       context: ./frontend
-
       dockerfile: Dockerfile
       args:
         - NEXT_PUBLIC_DIRECTUS_URL=${NEXT_PUBLIC_DIRECTUS_URL}
         - DIRECTUS_URL=${DIRECTUS_URL}
-
     restart: unless-stopped
-
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 2G
     environment:
-
       - NODE_ENV=production
-
+      - NODE_OPTIONS=--max-old-space-size=3072
       - DIRECTUS_URL=http://ssb_directus:8055
 
-      - NEXT_PUBLIC_DIRECTUS_URL=https://admin.southsuburbsbest.com
+      - NEXT_PUBLIC_DIRECTUS_URL=${NEXT_PUBLIC_DIRECTUS_URL}
 
       - NEXT_PUBLIC_MEILISEARCH_URL=https://search.southsuburbsbest.com
 
       - NEXT_PUBLIC_MEILISEARCH_KEY=9441662f9cacaef99f9782185e4a6b292be7e71d97ec118ac2bf0a55c7cce829
 
       - NEXT_PUBLIC_N8N_WEBHOOK_URL=https://automation.leads2scale.com/webhook/lead-submission
+
+      - SECRET=89d4083edc875f01d0af57305551b94c0f3202f5c3d5ef915ef898851c2cc991
+
+      - PUBLIC_URL=http://lgr_engine_directus:8055
 
     # ports:
 
@@ -39,9 +42,8 @@ services:
 
       - shared_network
 
-    volumes:
+   # volumes:
 
-      - ./frontend/public:/app/public:ro
   postgres:
     image: postgis/postgis:15-3.4
     container_name: ssb_postgres
@@ -115,19 +117,27 @@ services:
     depends_on:
       - directus
       - meilisearch
+
     ports:
       - "80:80"
       - "443:443"
+
     environment:
       EMAIL: ${CADDY_EMAIL}
+
+    extra_hosts:
+      - "host.docker.internal:172.17.0.1"
+
     volumes:
+      - /opt/southsuburbs/infrastructure/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - /opt/southsuburbs/infrastructure/caddy/.htpasswd:/etc/caddy/.htpasswd:ro
+      - /opt/southsuburbs/infrastructure/caddy/data:/data
+      - /opt/southsuburbs/infrastructure/caddy/config:/config
       - /opt/lgr-claude-code/static:/srv/widget-files:ro
-      - ./infrastructure/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
-      - ./infrastructure/caddy/data:/data
-      - ./infrastructure/caddy/config:/config
-    networks: 
-    - web
-    - shared_network
+
+    networks:
+      - web
+      - shared_network
 
   uptimekuma:
     image: louislam/uptime-kuma:1

@@ -4,12 +4,13 @@ export async function GET() {
       "https://southsuburbsbest.com/directus/items/businesses" +
       "?fields=id,name,slug,address_line1,city,state,zipcode,phone,latitude,longitude,isMappable" +
       "&limit=50";
-    const r = await fetch(directusUrl, {
-      method: "GET",
-      headers: {},
-      cache: "force-cache",
-      next: { revalidate: 300 }
-    });
+
+const r = await fetch(directusUrl, {
+  method: "GET",
+  headers: {},
+  next: { revalidate: 300 }
+});
+
     if (!r.ok) {
       const text = await r.text();
       console.error("Directus error:", r.status, text);
