@@ -1,155 +1,72 @@
-name: southsuburbs
 services:
-  frontend:
-    container_name: ssb_frontend
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-      args:
-        - NEXT_PUBLIC_DIRECTUS_URL=${NEXT_PUBLIC_DIRECTUS_URL}
-        - DIRECTUS_URL=${DIRECTUS_URL}
-    restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          memory: 4G
-        reservations:
-          memory: 2G
-    environment:
-      - NODE_ENV=production
-      - NODE_OPTIONS=--max-old-space-size=3072
-      - DIRECTUS_URL=http://ssb_directus:8055
-
-      - NEXT_PUBLIC_DIRECTUS_URL=${NEXT_PUBLIC_DIRECTUS_URL}
-
-      - NEXT_PUBLIC_MEILISEARCH_URL=https://search.southsuburbsbest.com
-
-      - NEXT_PUBLIC_MEILISEARCH_KEY=9441662f9cacaef99f9782185e4a6b292be7e71d97ec118ac2bf0a55c7cce829
-
-      - NEXT_PUBLIC_N8N_WEBHOOK_URL=https://automation.leads2scale.com/webhook/lead-submission
-
-      - SECRET=89d4083edc875f01d0af57305551b94c0f3202f5c3d5ef915ef898851c2cc991
-
-      - PUBLIC_URL=http://lgr_engine_directus:8055
-
-    # ports:
-
-    #   - "3001:3000"
-
-    networks:
-
-      - web
-
-      - shared_network
-
-
-  postgres:
+  ssb_postgres:
     image: postgis/postgis:15-3.4
     container_name: ssb_postgres
-    restart: always
+    restart: unless-stopped
     environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: southsuburbs
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: southsuburbs
     volumes:
-      - ./infrastructure/postgres/data:/var/lib/postgresql/data
-      - ./infrastructure/postgres/init:/docker-entrypoint-initdb.d:ro
-    healthcheck:
-      test: ["CMD-SHELL","pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-    networks: [web]
-
-  directus:
-    image: directus/directus:latest
+      - /opt/southsuburbs/infrastructure/postgres/data:/var/lib/postgresql/data
+    networks:
+      - southsuburbs_web
+  ssb_directus:
+    image: directus/directus:11.14.1
     container_name: ssb_directus
-    depends_on:
-      postgres:
-        condition: service_healthy
-    restart: always
+    restart: unless-stopped
+    networks:
+      - southsuburbs_web
+      - shared_network
     environment:
-      KEY: ${DIRECTUS_KEY}
-      SECRET: ${DIRECTUS_SECRET}
-      PUBLIC_URL: https://admin.southsuburbsbest.com
-      TRUST_PROXY: "true"
-      DB_CLIENT: pg
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_DATABASE: ${POSTGRES_DB}
-      DB_USER: ${POSTGRES_USER}
-      DB_PASSWORD: ${POSTGRES_PASSWORD}
-      WEBSOCKETS_ENABLED: "true"
-      CORS_ENABLED: "true"
-      CORS_ORIGIN: "https://admin.southsuburbsbest.com,https://southsuburbsbest.com"
-      ADMIN_EMAIL: ${DIRECTUS_ADMIN_EMAIL}
-      ADMIN_PASSWORD: ${DIRECTUS_ADMIN_PASSWORD}
-      ACCESS_TOKEN_TTL: 8h
-      REFRESH_TOKEN_TTL: 7d
-      SESSION_COOKIE_SECURE: "false"
-      SESSION_COOKIE_SAME_SITE: lax
-      STORAGE_LOCATIONS: local
-      STORAGE_LOCAL_DRIVER: local
-      STORAGE_LOCAL_ROOT: /data/uploads
-    volumes:
-      - ./infrastructure/directus/uploads:/data/uploads
-    networks: [web]
-
-  meilisearch:
-    image: getmeili/meilisearch:latest
-    container_name: ssb_meilisearch
-    restart: always
+      KEY: "415bb19ba9e731495902679bb5be2dec"
+      SECRET: "89d22c207d737800fa8d004a71a009af578d3dfce279b5cece6ca8f7ce9bce28"
+      DB_CLIENT: "pg"
+      DB_HOST: "ssb_postgres"
+      DB_PORT: "5432"
+      DB_DATABASE: "southsuburbs"
+      DB_USER: "southsuburbs"
+      DB_PASSWORD: "password"
+      # These two allow the admin panels to load correctly
+      PUBLIC_URL: "https://admin.southsuburbsbest.com"
+  frontend:
+    image: southsuburbs-frontend:latest
+    container_name: ssb_frontend
+    expose:
+      - "3000"
+    networks:
+      - southsuburbs_web
+      - shared_network
+    restart: unless-stopped
     environment:
-      MEILI_ENV: production
-      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY}
-      MEILI_NO_ANALYTICS: "true"
-    volumes:
-      - ./infrastructure/meilisearch/data:/meili_data
-    networks: [web]
-    ports:
-    - "7700:7700"
-
-  caddy:
-    image: caddy:2
+      - NODE_ENV=production
+      - DIRECTUS_URL=http://ssb_directus:8055
+  ssb_caddy:
+    image: caddy-cloudflare:local
+    environment:
+      - CLOUDFLARE_API_TOKEN=ca9Ij0f2KhdlATDyrrAX2zl7ZCHg1kpu9uv4ttI2
     container_name: ssb_caddy
-    restart: always
-    depends_on:
-      - directus
-      - meilisearch
-
+    restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
-
-    environment:
-      EMAIL: ${CADDY_EMAIL}
-
-    extra_hosts:
-      - "host.docker.internal:172.17.0.1"
-
-    volumes:
-      - /opt/southsuburbs/infrastructure/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
-      - /opt/southsuburbs/infrastructure/caddy/.htpasswd:/etc/caddy/.htpasswd:ro
-      - /opt/southsuburbs/infrastructure/caddy/data:/data
-      - /opt/southsuburbs/infrastructure/caddy/config:/config
-      - /opt/lgr-claude-code/static:/srv/widget-files:ro
-
     networks:
-      - web
+      - southsuburbs_web
       - shared_network
-
-  uptimekuma:
-    image: louislam/uptime-kuma:1
-    container_name: ssb_uptimekuma
-    restart: always
+      - automation_bridge
+      - grant-engine_grant_engine_net
     volumes:
-      - ./infrastructure/uptime-kuma/data:/app/data
-    networks: [web]
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./data/caddy_data:/data
 
 networks:
-
-  web:
+  southsuburbs_web:
     driver: bridge
   shared_network:
     external: true
-  
+  automation_bridge:
+    external: true
+    name: automation_bridge
+  grant-engine_grant_engine_net:
+    external: true
+    name: grant-engine_grant_engine_net

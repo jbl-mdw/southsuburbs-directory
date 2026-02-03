@@ -1,49 +1,237 @@
+{
+	email admin@southsuburbsbest.com
+	servers {
+		max_header_size 32KB
+	}
+}
+
+staging.leadsgrowrevenue.com {
+	tls {
+		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+	}
+	encode gzip
+	reverse_proxy lgr_wordpress_staging:80
+}
+
 southsuburbsbest.com {
-    encode gzip
-    @health path /health.txt
-    handle @health {
-        respond "ok" 200
-    }
-    # Directus API (PUBLIC - needed for frontend data fetching)
-    handle_path /directus/* {
-        reverse_proxy directus:8055
-    }
+	encode gzip
+	handle_path /directus/* {
+		reverse_proxy ssb_directus:8055
+	}
+	handle_path /utils/* {
+		reverse_proxy ssb_directus:8055
+	}
+	handle_path /assets/* {
+		reverse_proxy ssb_directus:8055
+	}
 
-    handle_path /utils/* {
-    reverse_proxy 127.0.0.1:8055
-    }
-     
-    handle_path /assets/* {
-    reverse_proxy 127.0.0.1:8055
-    }
-  
-    # Widget and API routes
-    handle_path /widget/* {
-        reverse_proxy host.docker.internal:8081
-    }
-    handle_path /api/widget/* {
-        reverse_proxy host.docker.internal:8081
-    }
-    # Frontend (catch-all) - UPDATED TO PORT 3001
-    reverse_proxy host.docker.internal:3001
+	handle /widget.js {
+		header Cache-Control "no-store"
+		reverse_proxy lgr_connect_gateway:4120
+	}
+
+	handle /widget.js {
+		reverse_proxy lgr_connect_gateway:4120
+	}
+
+	handle_path /widget/* {
+		reverse_proxy lgr_connect_gateway:4120
+	}
+
+	handle_path /api/widget/* {
+		reverse_proxy lgr_connect_gateway:4120
+	}
+
+	handle_path /connect/* {
+		reverse_proxy lgr_connect_gateway:4120
+	}
+
+	handle {
+		reverse_proxy ssb_frontend:3000
+	}
 }
 
-# Directus Admin Panel
 admin.southsuburbsbest.com {
-    reverse_proxy directus:8055
+	reverse_proxy ssb_directus:8055
 }
 
-# MeiliSearch
-search.southsuburbsbest.com {
-    reverse_proxy meilisearch:7700
+admin.leads2scale.com {
+	tls {
+		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+	}
+	encode gzip
+
+	basic_auth {
+		opsadmin $2a$14$sDsSRl0Twwl75LNtWBRFnuGmy9WZXwSCgu/SEWz2dMJor..NLpcn.
+	}
+
+	reverse_proxy lgr_engine_directus:8055
 }
 
-# Uptime Kuma
-status.southsuburbsbest.com {
-    reverse_proxy uptimekuma:3001
+agent.klirtrak.com {
+	encode gzip
+
+	# Agent API / Widget -> Gateway
+	handle /widget/* {
+		reverse_proxy lgr_connect_gateway:4120
+	}
+	handle /connect/* {
+		reverse_proxy lgr_connect_gateway:4120
+	}
+
+	# Agent UI Dashboard
+	handle {
+		reverse_proxy lgr-dashboard:3001
+	}
 }
 
-# N8N Automation
+api.klirtrak.com {
+	reverse_proxy lgr_connect_gateway:4120
+}
+
 automation.leads2scale.com {
-    reverse_proxy n8n:5678
+	reverse_proxy shared_n8n:5678 {
+		flush_interval -1
+		header_up Host {host}
+		header_up X-Real-IP {remote_host}
+	}
+}
+
+leadsgrowrevenue.com {
+	encode gzip
+	reverse_proxy lgr_wordpress_production:80 {
+		header_up Host {host}
+		header_up X-Real-IP {remote_host}
+	}
+}
+
+www.leadsgrowrevenue.com {
+	redir https://leadsgrowrevenue.com{uri}
+}
+
+crm.leads2scale.com {
+	encode gzip
+	reverse_proxy lgr_espocrm:80
+}
+
+chat.leads2scale.com {
+	encode gzip
+	reverse_proxy lgr_chatwoot:3000
+}
+
+mautic.leads2scale.com {
+	encode gzip
+	reverse_proxy lgr_mautic:80
+}
+
+api.leadsgrowrevenue.com {
+	encode gzip
+	reverse_proxy lgr_uce_gateway:3000
+}
+
+# ============================================
+# Leads2Scale WordPress Multisite
+# ============================================
+
+connect.leads2scale.com {
+	encode gzip
+
+	# LGR Connect API (v1)
+	handle /connect/* {
+		reverse_proxy lgr_connect_gateway:4120
+	}
+
+	respond "connect root ok" 200
+}
+
+intel.leads2scale.com {
+	tls {
+		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+	}
+	encode gzip
+
+	basic_auth {
+		opsadmin $2a$14$sDsSRl0Twwl75LNtWBRFnuGmy9WZXwSCgu/SEWz2dMJor..NLpcn.
+	}
+
+	reverse_proxy business-intel-backend:8050
+}
+
+firecrawl.leads2scale.com {
+	tls {
+		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+	}
+	encode gzip
+
+	basic_auth {
+		opsadmin $2a$14$sDsSRl0Twwl75LNtWBRFnuGmy9WZXwSCgu/SEWz2dMJor..NLpcn.
+	}
+
+	reverse_proxy firecrawl-backend:9100
+}
+
+ollama.leads2scale.com {
+	tls {
+		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+	}
+	encode gzip
+
+	basic_auth {
+		opsadmin $2a$14$sDsSRl0Twwl75LNtWBRFnuGmy9WZXwSCgu/SEWz2dMJor..NLpcn.
+	}
+
+	reverse_proxy ollama:11434
+}
+
+leads2scale.com, *.leads2scale.com {
+	tls {
+		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+	}
+	encode gzip
+	reverse_proxy leads2scale_wordpress_production:80
+}
+
+staging.leads2scale.com {
+	tls {
+		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+	}
+	encode gzip
+	reverse_proxy leads2scale_wordpress_staging:80
+}
+
+ai.leads2scale.com {
+	tls {
+		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+	}
+	encode gzip
+
+	# LGR Connect Widget (SECURED via gateway)
+	@widget path /widget /widget.js /widget/*
+	handle @widget {
+		header Cache-Control "no-store"
+		reverse_proxy lgr_connect_gateway:4120
+	}
+
+	# LGR Connect API (public gateway)
+	handle_path /connect/* {
+		reverse_proxy lgr_connect_gateway:4120
+	}
+
+	# Flowise (LGR Chat brain)
+	handle {
+		reverse_proxy grant_engine_flowise:3000
+	}
+}
+
+ops.leads2scale.com {
+	tls {
+		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+	}
+	encode gzip
+
+	basic_auth {
+		opsadmin $2a$14$N.6nYr803aas2Bacf3QzIetfRzr9dQh0OrX9rFKLEfgqKUP2HKE5.
+	}
+
+	reverse_proxy ops-hub-backend:4105
 }
