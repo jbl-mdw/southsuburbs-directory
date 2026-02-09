@@ -14,32 +14,26 @@ staging.leadsgrowrevenue.com {
 }
 
 southsuburbsbest.com {
-    encode gzip
-    
-    # 1. Named Matcher for LGR Gateway
-    @gateway_paths {
-        path /widget.js* /widget/* /api/widget/* /api/v1/* /v1/* /connect/*
-    }
-    
-    handle @gateway_paths {
-        header Cache-Control "no-store"
-        reverse_proxy lgr_connect_gateway:4120
-    }
-    
-    # 2. Named Matcher for Directus (Fixes Line 30 error)
-    @directus_paths {
-        path /directus/* /utils/* /assets/*
-    }
-    
-    handle @directus_paths {
-        reverse_proxy ssb_directus:8055
-    }
-    
-    # 3. Main Next.js Frontend
-    handle {
-        reverse_proxy frontend:3000
-    }
+  encode gzip
+
+  # Block legacy widget
+  respond /widget.js 404
+
+  # LGR Gateway
+  reverse_proxy /v1/public/* lgr_connect_gateway:4120
+  reverse_proxy /api/widget/* lgr_connect_gateway:4120
+  reverse_proxy /api/v1/* lgr_connect_gateway:4120
+  reverse_proxy /connect/* lgr_connect_gateway:4120
+
+  # Directus
+  reverse_proxy /directus/* ssb_directus:8055
+  reverse_proxy /assets/* ssb_directus:8055
+  reverse_proxy /utils/* ssb_directus:8055
+
+  # Frontend (catch-all, must be last)
+  reverse_proxy frontend:3000
 }
+
 # 4. Independent Subdomain (Must be outside the main block)
 connect.klirtrak.com {
 	reverse_proxy lgr_connect_gateway:4120

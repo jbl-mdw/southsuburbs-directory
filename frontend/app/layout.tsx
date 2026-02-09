@@ -1,12 +1,10 @@
-import type { Metadata } from "next";
-import Script from "next/script";
-import "./globals.css";
-import Navbar from "@/components/navbar/Navbar";
-import Footer from "@/components/Footer";
+import type { Metadata } from 'next';
+import './globals.css';
+import Navbar from '@/components/Navbar';
 
 export const metadata: Metadata = {
-  title: "South Suburbs Best",
-  description: "Find the best local businesses in Chicago's South Suburbs",
+  title: 'SouthSuburbsBest',
+  description: 'SouthSuburbsBest',
 };
 
 export default function RootLayout({
@@ -19,24 +17,6 @@ export default function RootLayout({
       <body className="min-h-screen bg-white">
         <Navbar />
         {children}
-        <Footer />
-
-        {/* KlirTrak site binding */}
-        <Script
-          id="klirtrak-init"
-          strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.__KLIRTRAK_SITE__ = "southsuburbsbest.com";
-            `,
-          }}
-        />
-
-        {/* KlirTrak widget loader */}
-        <Script
-          src="/widget.js"
-          strategy="afterInteractive"
-        />
       </body>
     </html>
   );

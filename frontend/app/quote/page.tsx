@@ -45,16 +45,21 @@ function QuoteFormContent() {
       if (!businessSlug) return;
 
       try {
-        const url =
-          'https://southsuburbsbest.com/directus/items/businesses' +
-          '?filter[slug][_eq]=' +
-          encodeURIComponent(businessSlug) +
-          '&limit=1' +
-          '&fields=id,name';
+      const base =
+  process.env.NEXT_PUBLIC_DIRECTUS_URL || process.env.DIRECTUS_URL || '';
+
+if (!base) return;
+
+const url =
+  `${base}/items/businesses` +
+  '?filter[slug][_eq]=' +
+  encodeURIComponent(businessSlug) +
+  '&limit=1' +
+  '&fields=id,name';
 
         const res = await fetch(url, {
   method: 'GET',
-  next: { revalidate: 300 },
+  
 });
 
         if (res.ok) {

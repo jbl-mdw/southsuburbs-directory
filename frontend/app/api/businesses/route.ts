@@ -1,35 +1,24 @@
 export async function GET() {
+  const base =
+    process.env.NEXT_PUBLIC_DIRECTUS_URL || process.env.DIRECTUS_URL || '';
+
+  if (!base) {
+    return Response.json({ data: [] }, { status: 200 });
+  }
+
   try {
-    const directusUrl =
-      "https://southsuburbsbest.com/directus/items/businesses" +
-      "?fields=id,name,slug,address_line1,city,state,zipcode,phone,latitude,longitude,isMappable" +
-      "&limit=50";
+    const url =
+      `${base}/items/businesses` +
+      `?fields=id,name,slug,address_line1,city,state,zipcode,phone,latitude,longitude,isMappable` +
+      `&limit=50`;
 
-const r = await fetch(directusUrl, {
-  method: "GET",
-  headers: {},
-  next: { revalidate: 300 }
-});
+    const res = await fetch(url, { next: { revalidate: 300 } });
 
-    if (!r.ok) {
-      const text = await r.text();
-      console.error("Directus error:", r.status, text);
-      return new Response(
-        JSON.stringify({ error: "Directus query failed" }),
-        { status: r.status, headers: { "Content-Type": "application/json" } }
-      );
-    }
-    const data = await r.json();
-    const businesses = Array.isArray(data.data) ? data.data : [];
-    return new Response(
-      JSON.stringify({ businesses }),
-      { status: 200, headers: { "Content-Type": "application/json" } }
-    );
-  } catch (err: any) {
-    console.error("Handler crashed:", err);
-    return new Response(
-      JSON.stringify({ error: "Server error" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
-    );
+    if (!res.ok) return Response.json({ data: [] }, { status: 200 });
+
+    const json = await res.json();
+    return Response.json({ data: Array.isArray(json?.data) ? json.data : [] }, { status: 200 });
+  } catch {
+    return Response.json({ data: [] }, { status: 200 });
   }
 }
