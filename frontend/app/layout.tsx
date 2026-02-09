@@ -15,6 +15,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen bg-white">
+        {/* Fixes the syntax error and connects to the Brain */}
+        <script 
+          src="https://southsuburbsbest.com/v1/public/widget-loader.js" 
+          data-client-id="SSB_PROD" 
+          defer 
+        />
         <Navbar />
         {children}
       </body>
