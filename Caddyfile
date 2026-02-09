@@ -14,47 +14,36 @@ staging.leadsgrowrevenue.com {
 }
 
 southsuburbsbest.com {
-	encode gzip
-	handle_path /directus/* {
-		reverse_proxy ssb_directus:8055
-	}
-	handle_path /utils/* {
-		reverse_proxy ssb_directus:8055
-	}
-	handle_path /assets/* {
-		reverse_proxy ssb_directus:8055
-	}
-
-	handle /widget.js {
-		header Cache-Control "no-store"
-		reverse_proxy lgr_connect_gateway:4120
-	}
-
-	handle /widget.js {
-		reverse_proxy lgr_connect_gateway:4120
-	}
-
-	handle_path /widget/* {
-		reverse_proxy lgr_connect_gateway:4120
-	}
-
-	handle_path /api/widget/* {
-		reverse_proxy lgr_connect_gateway:4120
-	}
-
-	handle_path /connect/* {
-		reverse_proxy lgr_connect_gateway:4120
-	}
-
-	handle {
-		reverse_proxy ssb_frontend:3000
-	}
+    encode gzip
+    
+    # 1. Named Matcher for LGR Gateway
+    @gateway_paths {
+        path /widget.js* /widget/* /api/widget/* /api/v1/* /v1/* /connect/*
+    }
+    
+    handle @gateway_paths {
+        header Cache-Control "no-store"
+        reverse_proxy lgr_connect_gateway:4120
+    }
+    
+    # 2. Named Matcher for Directus (Fixes Line 30 error)
+    @directus_paths {
+        path /directus/* /utils/* /assets/*
+    }
+    
+    handle @directus_paths {
+        reverse_proxy ssb_directus:8055
+    }
+    
+    # 3. Main Next.js Frontend
+    handle {
+        reverse_proxy frontend:3000
+    }
 }
-
-admin.southsuburbsbest.com {
-	reverse_proxy ssb_directus:8055
+# 4. Independent Subdomain (Must be outside the main block)
+connect.klirtrak.com {
+	reverse_proxy lgr_connect_gateway:4120
 }
-
 admin.leads2scale.com {
 	tls {
 		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
@@ -72,9 +61,15 @@ agent.klirtrak.com {
 	encode gzip
 
 	# Agent API / Widget -> Gateway
-	handle /widget/* {
+
+	handle /widget/v1/loader.js {
 		reverse_proxy lgr_connect_gateway:4120
 	}
+
+	handle_path /widget/* {
+		reverse_proxy lgr_connect_gateway:4120
+	}
+
 	handle /connect/* {
 		reverse_proxy lgr_connect_gateway:4120
 	}
@@ -90,6 +85,14 @@ api.klirtrak.com {
 }
 
 automation.leads2scale.com {
+	encode gzip
+
+	@lgr_connect {
+		path /v1/* /connect/v1/* /health
+	}
+
+	reverse_proxy @lgr_connect lgr_connect_gateway:4120
+
 	reverse_proxy shared_n8n:5678 {
 		flush_interval -1
 		header_up Host {host}
@@ -136,8 +139,8 @@ api.leadsgrowrevenue.com {
 connect.leads2scale.com {
 	encode gzip
 
-	# LGR Connect API (v1)
-	handle /connect/* {
+	# Canonical LGR Connect API
+	handle /v1/* {
 		reverse_proxy lgr_connect_gateway:4120
 	}
 

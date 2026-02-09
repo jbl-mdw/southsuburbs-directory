@@ -21,17 +21,20 @@ export default function RootLayout({
         {children}
         <Footer />
 
-        {/* LGR Voice Agent widget */}
-        <Script id="lgr-widget-config" strategy="afterInteractive">
-          {`
-            window.LGR_AGENT_CONFIG = {
-              apiUrl: 'https://agent.klirtrak.com',
-              agentId: '419aa1cc-6b80-4a69-95cb-7a688536bc29'
-            };
-          `}
-        </Script>
+        {/* KlirTrak site binding */}
         <Script
-          src="https://agent.klirtrak.com/widget.js"
+          id="klirtrak-init"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.__KLIRTRAK_SITE__ = "southsuburbsbest.com";
+            `,
+          }}
+        />
+
+        {/* KlirTrak widget loader */}
+        <Script
+          src="/widget.js"
           strategy="afterInteractive"
         />
       </body>
