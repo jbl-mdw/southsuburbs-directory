@@ -72,3 +72,7 @@ docker_state_*.txt
 frontend/frontend@1.0.0
 # local secrets
 scripts/.env.meili
+# Local-only / not part of southsuburbs-directory repo
+grant-engine/
+lgr-conversational-platform/
+frontend/ssb-pages/
