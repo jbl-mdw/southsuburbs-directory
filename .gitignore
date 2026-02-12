@@ -76,3 +76,8 @@ scripts/.env.meili
 grant-engine/
 lgr-conversational-platform/
 frontend/ssb-pages/
+
+# --- allow restore snapshots (must stay version controlled) ---
+!docs/restore-snapshots/
+!docs/restore-snapshots/Caddyfile.*
+!docs/restore-snapshots/compose-resolved.*
