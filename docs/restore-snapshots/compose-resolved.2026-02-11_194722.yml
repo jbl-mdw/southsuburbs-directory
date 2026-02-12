@@ -1,0 +1,88 @@
+name: southsuburbs
+services:
+  frontend:
+    container_name: ssb_frontend
+    environment:
+      DIRECTUS_URL: http://ssb_directus:8055
+      NODE_ENV: production
+    expose:
+      - "3000"
+    image: southsuburbs-frontend:latest
+    networks:
+      shared_network: null
+      southsuburbs_web: null
+    restart: unless-stopped
+  ssb_caddy:
+    container_name: ssb_caddy
+    environment:
+      CLOUDFLARE_API_TOKEN: ca9Ij0f2KhdlATDyrrAX2zl7ZCHg1kpu9uv4ttI2
+    image: caddy-cloudflare:local
+    networks:
+      automation_bridge: null
+      grant-engine_grant_engine_net: null
+      shared_network: null
+      southsuburbs_web: null
+    ports:
+      - mode: ingress
+        target: 80
+        published: "80"
+        protocol: tcp
+      - mode: ingress
+        target: 443
+        published: "443"
+        protocol: tcp
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: /opt/southsuburbs/Caddyfile
+        target: /etc/caddy/Caddyfile
+        bind: {}
+      - type: bind
+        source: /opt/southsuburbs/data/caddy_data
+        target: /data
+        bind: {}
+  ssb_directus:
+    container_name: ssb_directus
+    environment:
+      DB_CLIENT: pg
+      DB_DATABASE: southsuburbs
+      DB_HOST: ssb_postgres
+      DB_PASSWORD: password
+      DB_PORT: "5432"
+      DB_USER: southsuburbs
+      KEY: 415bb19ba9e731495902679bb5be2dec
+      PUBLIC_URL: https://admin.southsuburbsbest.com
+      SECRET: 89d22c207d737800fa8d004a71a009af578d3dfce279b5cece6ca8f7ce9bce28
+    image: directus/directus:11.14.1
+    networks:
+      shared_network: null
+      southsuburbs_web: null
+    restart: unless-stopped
+  ssb_postgres:
+    container_name: ssb_postgres
+    environment:
+      POSTGRES_DB: southsuburbs
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: southsuburbs
+    image: postgis/postgis:15-3.4
+    networks:
+      southsuburbs_web: null
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: /opt/southsuburbs/infrastructure/postgres/data
+        target: /var/lib/postgresql/data
+        bind: {}
+networks:
+  automation_bridge:
+    name: automation_bridge
+    external: true
+  grant-engine_grant_engine_net:
+    name: grant-engine_grant_engine_net
+    external: true
+  shared_network:
+    name: shared_network
+    external: true
+  southsuburbs_web:
+    name: southsuburbs_southsuburbs_web
+    driver: bridge
