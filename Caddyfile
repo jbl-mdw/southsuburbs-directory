@@ -27,19 +27,35 @@ southsuburbsbest.com {
     }
     
     # 2. Named Matcher for Directus (Fixes Line 30 error)
-    @directus_paths {
-        path /directus/* /utils/* /assets/*
+    @directus_app {
+        path /directus/*
     }
-    
-    handle @directus_paths {
+    handle @directus_app {
+        uri strip_prefix /directus
         reverse_proxy ssb_directus:8055
     }
+
+    @directus_static {
+    path /assets/* /utils/*
+    }
+    handle @directus_static {
+    reverse_proxy ssb_directus:8055
+}
     
     # 3. Main Next.js Frontend
     handle {
         reverse_proxy frontend:3000
     }
 }
+
+admin.southsuburbsbest.com {
+    tls {
+        dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+    }
+    encode gzip
+    reverse_proxy ssb_directus:8055
+}
+
 # 4. Independent Subdomain (Must be outside the main block)
 connect.klirtrak.com {
 	reverse_proxy lgr_connect_gateway:4120
@@ -81,7 +97,11 @@ agent.klirtrak.com {
 }
 
 api.klirtrak.com {
-	reverse_proxy lgr_connect_gateway:4120
+    tls {
+        dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+    }
+    encode gzip
+    reverse_proxy lgr_connect_gateway:4120
 }
 
 automation.leads2scale.com {
@@ -128,8 +148,10 @@ mautic.leads2scale.com {
 }
 
 api.leadsgrowrevenue.com {
-	encode gzip
-	reverse_proxy lgr_uce_gateway:3000
+    tls {
+        dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+    }
+    respond "api temporarily disabled" 503
 }
 
 # ============================================
