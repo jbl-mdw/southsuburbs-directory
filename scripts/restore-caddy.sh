@@ -15,6 +15,14 @@ if [ ! -f "$SNAPSHOT" ]; then
   exit 1
 fi
 
+echo "[0/5] Verifying snapshot is tracked in Git"
+cd /opt/southsuburbs
+if ! git ls-files --error-unmatch "$SNAPSHOT" >/dev/null 2>&1; then
+  echo "Refusing: snapshot is not tracked in Git: $SNAPSHOT"
+  echo "Use a snapshot from: docs/restore-snapshots/"
+  exit 1
+fi
+
 echo "[1/5] Backing up current Caddyfile → $BACKUP"
 cp -a "$CADDYFILE" "$BACKUP"
 
