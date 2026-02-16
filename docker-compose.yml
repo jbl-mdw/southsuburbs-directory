@@ -30,6 +30,9 @@ services:
       # These two allow the admin panels to load correctly
       PUBLIC_URL: "https://admin.southsuburbsbest.com"
   frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     image: southsuburbs-frontend:latest
     container_name: ssb_frontend
     expose:

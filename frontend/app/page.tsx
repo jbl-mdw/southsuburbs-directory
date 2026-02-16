@@ -1,3 +1,8 @@
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+
+
 import Image from "next/image";
 import Link from "next/link";
 
@@ -208,7 +213,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
       {/* SOUTH SUBURBS CITIES GRID */}
       <section className="bg-white py-16">
         <div className="mx-auto w-full max-w-6xl px-4">
@@ -220,48 +224,111 @@ export default function Home() {
               Cities you&apos;ll explore first in the Chicago Southland.
             </p>
           </div>
+          <div className="hidden md:grid gap-3 grid-cols-[1fr_1fr_1.6fr] grid-rows-[220px_220px]">
+            {/* LEFT - tall (2 rows) */}
+            <Link
+              href={`/city/${southSuburbCities[0].slug}`}
+              className="relative overflow-hidden rounded-2xl row-span-2"
+            >
+              <Image
+                src={southSuburbCities[0].image}
+                alt={southSuburbCities[0].name}
+                fill
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-black/10" />
+              <span className="absolute left-4 bottom-4 text-lg font-semibold text-white drop-shadow">
+                {southSuburbCities[0].name}
+              </span>
+            </Link>
+            
+            {/* MIDDLE - top */}
+            <Link
+              href={`/city/${southSuburbCities[1].slug}`}
+              className="relative overflow-hidden rounded-2xl"
+            >
+              <Image
+                src={southSuburbCities[1].image}
+                alt={southSuburbCities[1].name}
+                fill
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/5 to-black/5" />
+              <span className="absolute left-4 bottom-4 text-base font-semibold text-white drop-shadow">
+                {southSuburbCities[1].name}
+              </span>
+            </Link>
 
-          <div className="grid auto-rows-[220px] grid-cols-1 gap-4 sm:grid-cols-3">
-            {southSuburbCities[0] && (
-              <Link
-                href={`/city/${southSuburbCities[0].slug}`}
-                className="relative overflow-hidden rounded-2xl sm:row-span-2"
-              >
-                <Image
-                  src={southSuburbCities[0].image}
-                  alt={southSuburbCities[0].name}
-                  fill
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-black/10" />
-                <span className="absolute left-4 bottom-4 text-lg font-semibold text-white drop-shadow">
-                  {southSuburbCities[0].name}
-                </span>
-              </Link>
-            )}
+            {/* RIGHT - top wide */}
+            <Link
+              href={`/city/${southSuburbCities[2].slug}`}
+              className="relative overflow-hidden rounded-2xl"
+            >
+              <Image
+                src={southSuburbCities[2].image}
+                alt={southSuburbCities[2].name}
+                fill
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/5 to-black/5" />
+              <span className="absolute left-4 bottom-4 text-base font-semibold text-white drop-shadow">
+                {southSuburbCities[2].name}
+              </span>
+            </Link>
 
-            {southSuburbCities.slice(1).map((city) => (
+            {/* MIDDLE - bottom */}
+            <Link
+              href={`/city/${southSuburbCities[3].slug}`}
+              className="relative overflow-hidden rounded-2xl"
+            >
+              <Image
+                src={southSuburbCities[3].image}
+                alt={southSuburbCities[3].name}
+                fill
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/5 to-black/5" />
+              <span className="absolute left-4 bottom-4 text-base font-semibold text-white drop-shadow">
+                {southSuburbCities[3].name}
+              </span>
+            </Link>
+
+            {/* RIGHT - bottom (2 side-by-side) */}
+            <div className="grid grid-cols-2 gap-3">
               <Link
-                key={city.slug}
-                href={`/city/${city.slug}`}
+                href={`/city/${southSuburbCities[4].slug}`}
                 className="relative overflow-hidden rounded-2xl"
               >
                 <Image
-                  src={city.image}
-                  alt={city.name}
+                  src={southSuburbCities[4].image}
+                  alt={southSuburbCities[4].name}
                   fill
                   className="object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/5 to-black/5" />
                 <span className="absolute left-4 bottom-4 text-base font-semibold text-white drop-shadow">
-                  {city.name}
+                  {southSuburbCities[4].name}
                 </span>
               </Link>
-            ))}
+              <Link
+                href={`/city/${southSuburbCities[5].slug}`}
+                className="relative overflow-hidden rounded-2xl"
+              >
+                <Image
+                  src={southSuburbCities[5].image}
+                  alt={southSuburbCities[5].name}
+                  fill
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/5 to-black/5" />
+                <span className="absolute left-4 bottom-4 text-base font-semibold text-white drop-shadow">
+                  {southSuburbCities[5].name}
+                </span>
+              </Link>
+            </div>
           </div>
         </div>
       </section>
-
       {/* HOW IT WORKS / CLAIM & GET STARTED */}
       <section className="bg-slate-50 py-16">
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-4 lg:flex-row lg:items-center">

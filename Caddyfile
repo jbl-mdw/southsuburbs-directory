@@ -90,12 +90,21 @@ api.klirtrak.com {
 }
 
 automation.leads2scale.com {
-	reverse_proxy shared_n8n:5678 {
-		flush_interval -1
-		header_up Host {host}
-		header_up X-Real-IP {remote_host}
-	}
+        encode gzip
+
+        @lgr_connect {
+                path /v1/* /connect/v1/* /health
+        }
+
+        reverse_proxy @lgr_connect lgr_connect_gateway:4120
+
+        reverse_proxy shared_n8n:5678 {
+                flush_interval -1
+                header_up Host {host}
+                header_up X-Real-IP {remote_host}
+        }
 }
+
 
 leadsgrowrevenue.com {
 	encode gzip
@@ -136,8 +145,8 @@ api.leadsgrowrevenue.com {
 connect.leads2scale.com {
 	encode gzip
 
-	# LGR Connect API (v1)
-	handle /connect/* {
+	# Canonical LGR Connect API
+	handle /v1/* {
 		reverse_proxy lgr_connect_gateway:4120
 	}
 

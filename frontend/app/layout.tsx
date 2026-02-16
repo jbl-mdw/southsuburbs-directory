@@ -21,19 +21,6 @@ export default function RootLayout({
         {children}
         <Footer />
 
-        {/* LGR Voice Agent widget */}
-        <Script id="lgr-widget-config" strategy="afterInteractive">
-          {`
-            window.LGR_AGENT_CONFIG = {
-              apiUrl: 'https://agent.klirtrak.com',
-              agentId: '419aa1cc-6b80-4a69-95cb-7a688536bc29'
-            };
-          `}
-        </Script>
-        <Script
-          src="https://agent.klirtrak.com/widget.js"
-          strategy="afterInteractive"
-        />
       </body>
     </html>
   );

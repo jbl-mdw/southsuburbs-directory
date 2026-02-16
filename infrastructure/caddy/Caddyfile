@@ -1,34 +1,36 @@
 {
-  email admin@southsuburbsbest.com
+	# Best Practice: Your real email for Let's Encrypt/ZeroSSL expiry alerts
+	email jlanders@leadsgrowrevenue.com
+
+	# Best Practice: Global logging for troubleshooting 502/server errors
+	log default {
+		output stdout
+		format json
+		level INFO
+	}
 }
 
-southsuburbsbest.com {
-  handle /directus/* {
-    uri strip_prefix /directus
-    reverse_proxy ssb_directus:8055
-  }
-  
-  handle {
-    reverse_proxy ssb_frontend:3000
-  }
+# LGR Engine
+admin.leads2scale.com {
+	reverse_proxy grant_engine_directus:8055
 }
 
+# SSB Directus Admin
 admin.southsuburbsbest.com {
-  reverse_proxy ssb_directus:8055
+	reverse_proxy ssb_directus:8055
 }
 
-agent.klirtrak.com {
-  reverse_proxy lgr-nginx:80
-}
-
-automation.leads2scale.com {
-  reverse_proxy n8n:5678
-}
-
+# Flowise (Ops Hub)
 ai.leads2scale.com {
-  reverse_proxy flowise:3000
+	reverse_proxy ops_hub_flowise:3000
 }
 
-klirtrak.com, www.klirtrak.com {
-  reverse_proxy lgr-nginx:80
+# n8n Automation
+automation.leads2scale.com {
+	reverse_proxy n8n:5678
+}
+
+# Frontend - South Suburbs Best
+southsuburbsbest.com {
+	reverse_proxy ssb_frontend:3000
 }

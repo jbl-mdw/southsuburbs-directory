@@ -1,6 +1,7 @@
-import { notFound } from "next/navigation";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+
+import { notFound } from "next/navigation";
 
 async function getCity(slug: string) {
   const base = process.env.DIRECTUS_URL!;

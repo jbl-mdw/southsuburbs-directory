@@ -62,6 +62,8 @@ export interface Business {
   payment_methods?: string[];
   languages?: string[];
   hours?: any;
+  price_range?: string;
+
 }
 
 export interface Category {

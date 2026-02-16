@@ -9,30 +9,34 @@ const headers: HeadersInit = process.env.DIRECTUS_TOKEN
 
 async function getCategories() {
   const base = process.env.NEXT_PUBLIC_DIRECTUS_URL || process.env.DIRECTUS_URL;
-  const res = await fetch(
-    `${base}/items/categories?limit=60&sort=name&fields=id,name,slug`,
-    const res = await fetch(url, {
-    next: { revalidate: 300 },
-  headers,
-});
+  if (!base) return [];
 
-  );
+  const url = `${base}/items/categories?limit=60&sort=name&fields=id,name,slug`;
+
+  const res = await fetch(url, {
+    next: { revalidate: 300 },
+    headers,
+  });
+
+  if (!res.ok) return [];
   const json = await res.json();
-  return json.data || [];
+  return json?.data ?? [];
 }
 
 async function getCities() {
   const base = process.env.NEXT_PUBLIC_DIRECTUS_URL || process.env.DIRECTUS_URL;
-  const res = await fetch(
-    `${base}/items/cities?limit=12&filter[is_featured][_eq]=true&sort=name&fields=name,slug`,
-    const res = await fetch(url, {
-   next: { revalidate: 300 },
-  headers,
-});
+  if (!base) return [];
 
-  );
+  const url = `${base}/items/cities?limit=12&filter[is_featured][_eq]=true&sort=name&fields=name,slug`;
+
+  const res = await fetch(url, {
+    next: { revalidate: 300 },
+    headers,
+  });
+
+  if (!res.ok) return [];
   const json = await res.json();
-  return json.data || [];
+  return json?.data ?? [];
 }
 
 export default async function Navbar() {
@@ -41,7 +45,6 @@ export default async function Navbar() {
   return (
     <nav className="bg-white border-b border-gray-100 sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between gap-6">
-        <Link href="/" className="flex items-center gap-2 shrink-0">
         <Link href="/" className="flex items-center shrink-0">
           <Image
             src="/logo.png"
@@ -52,8 +55,7 @@ export default async function Navbar() {
             priority
           />
         </Link>
-        </Link>
-        
+
         <div className="flex items-center gap-6">
           <div className="relative group">
             <button className="text-gray-700 hover:text-blue-600 font-medium flex items-center gap-1">
@@ -66,7 +68,7 @@ export default async function Navbar() {
               <CategoriesMegaMenu categories={categories} />
             </div>
           </div>
-          
+
           <div className="relative group">
             <button className="text-gray-700 hover:text-blue-600 font-medium flex items-center gap-1">
               Explore Locations
@@ -75,11 +77,11 @@ export default async function Navbar() {
               </svg>
             </button>
             <div className="absolute left-0 mt-2 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-              <LocationsMenu initialCities={cities} />
+              <LocationsMenu initialCities={cities} cities={cities} setIsOpen={() => {}} />
             </div>
           </div>
         </div>
-        
+
         <div className="flex items-center gap-4">
           <Link href="/submit" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold">
             + Add Listing

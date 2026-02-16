@@ -1,4 +1,4 @@
-import { directusGet } from "./directus";
+import { directus, directusGet } from './directus';
 
 // Fetch all posts for /blog listing
 export async function getAllPosts() {
@@ -18,7 +18,7 @@ export async function getAllPosts() {
     ],
   });
 
-  return data?.data || [];
+  return data || [];
 }
 
 // Generate static params for /blog/[slug]
@@ -45,5 +45,5 @@ export async function getPostBySlug(slug: string) {
     ],
   });
 
-  return data?.data?.[0] || null;
+  return data || [];
 }

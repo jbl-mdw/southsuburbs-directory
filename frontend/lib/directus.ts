@@ -16,10 +16,14 @@ export async function fetchBusinessBySlug(slug: string) {
         limit: 1,
       })
     );
-    
+
     return response[0] || null;
   } catch (error) {
     console.error('Error fetching business:', error);
     return null;
   }
+} // This closes fetchBusinessBySlug
+
+export async function directusGet(collection: string, params: any) {
+  return directus.request(readItems(collection, params));
 }

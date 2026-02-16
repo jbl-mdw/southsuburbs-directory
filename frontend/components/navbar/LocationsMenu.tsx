@@ -11,9 +11,10 @@ interface City {
 interface LocationsMenuProps {
   cities: City[];
   setIsOpen: (open: boolean) => void;
+  initialCities?: City[];
 }
 
-const LocationsMenu = ({ cities, setIsOpen }: LocationsMenuProps) => {
+const LocationsMenu = ({ cities, setIsOpen, initialCities }: LocationsMenuProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   console.log("LocationsMenu received cities:", cities);
   const [searchResults, setSearchResults] = useState<City[]>([]);
