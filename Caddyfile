@@ -45,7 +45,9 @@ southsuburbsbest.com {
 	handle_path /connect/* {
 		reverse_proxy lgr_connect_gateway:4120
 	}
-
+        handle /v1/public/* {
+                reverse_proxy lgr_connect_gateway:4120
+        }
 	handle {
 		reverse_proxy ssb_frontend:3000
 	}

@@ -20,6 +20,11 @@ export default function RootLayout({
         <Navbar />
         {children}
         <Footer />
+<Script
+          src="https://southsuburbsbest.com/v1/public/widget-loader.js"
+          data-client-id="SSB_PROD"
+          strategy="afterInteractive"
+        />
 
       </body>
     </html>
