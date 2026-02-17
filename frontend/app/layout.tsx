@@ -25,7 +25,6 @@ export default function RootLayout({
           data-client-id="SSB_PROD"
           strategy="afterInteractive"
         />
-
       </body>
     </html>
   );
