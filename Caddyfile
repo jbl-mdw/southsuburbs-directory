@@ -42,22 +42,21 @@ southsuburbsbest.com {
 		reverse_proxy lgr_connect_gateway:4120
 	}
 
-        handle_path /connect/* {
-                reverse_proxy lgr_connect_gateway:4120
-        }
+	handle_path /connect/* {
+		reverse_proxy lgr_connect_gateway:4120
+	}
 
-        handle /api/voice/* {
-                reverse_proxy lgr_connect_gateway:4120
-        }
+	handle /api/voice/* {
+		reverse_proxy lgr_connect_gateway:4120
+	}
 
-        handle /v1/public/* {
-                reverse_proxy lgr_connect_gateway:4120
-        }
+	handle /v1/public/* {
+		reverse_proxy lgr_connect_gateway:4120
+	}
 
-        handle {
-                reverse_proxy ssb_frontend:3000
-        }
-
+	handle {
+		reverse_proxy ssb_frontend:3000
+	}
 }
 
 admin.southsuburbsbest.com {
@@ -70,9 +69,6 @@ admin.leads2scale.com {
 	}
 	encode gzip
 
-	basic_auth {
-		opsadmin $2a$14$sDsSRl0Twwl75LNtWBRFnuGmy9WZXwSCgu/SEWz2dMJor..NLpcn.
-	}
 
 	reverse_proxy lgr_engine_directus:8055
 }
@@ -99,21 +95,20 @@ api.klirtrak.com {
 }
 
 automation.leads2scale.com {
-        encode gzip
+	encode gzip
 
-        @lgr_connect {
-                path /v1/* /connect/v1/* /health
-        }
+	@lgr_connect {
+		path /v1/* /connect/v1/* /health
+	}
 
-        reverse_proxy @lgr_connect lgr_connect_gateway:4120
+	reverse_proxy @lgr_connect lgr_connect_gateway:4120
 
-        reverse_proxy shared_n8n:5678 {
-                flush_interval -1
-                header_up Host {host}
-                header_up X-Real-IP {remote_host}
-        }
+	reverse_proxy shared_n8n:5678 {
+		flush_interval -1
+		header_up Host {host}
+		header_up X-Real-IP {remote_host}
+	}
 }
-
 
 leadsgrowrevenue.com {
 	encode gzip
@@ -152,14 +147,32 @@ api.leadsgrowrevenue.com {
 # ============================================
 
 connect.leads2scale.com {
-	encode gzip
+    encode gzip
 
-	# Canonical LGR Connect API
-	handle /v1/* {
-		reverse_proxy lgr_connect_gateway:4120
-	}
+    header @from_ssb Access-Control-Allow-Origin "https://southsuburbsbest.com"
+    header @from_ssb_www Access-Control-Allow-Origin "https://www.southsuburbsbest.com"
+    header @from_demo Access-Control-Allow-Origin "https://demo1.leads2scale.com"
 
-	respond "connect root ok" 200
+    header Access-Control-Allow-Methods "GET, POST, OPTIONS"
+    header Access-Control-Allow-Headers "Content-Type, X-Client-ID"
+    header Access-Control-Allow-Credentials "true"
+
+    @from_ssb header Origin https://southsuburbsbest.com
+    @from_ssb_www header Origin https://www.southsuburbsbest.com
+    @from_demo header Origin https://demo1.leads2scale.com
+
+    @options method OPTIONS
+    respond @options 204
+
+    handle /v1/* {
+        reverse_proxy lgr_connect_gateway:4120
+    }
+
+    handle /demo/* {
+        reverse_proxy lgr_connect_gateway:4120
+    }
+
+    respond "connect root ok" 200
 }
 
 intel.leads2scale.com {
@@ -168,9 +181,6 @@ intel.leads2scale.com {
 	}
 	encode gzip
 
-	basic_auth {
-		opsadmin $2a$14$sDsSRl0Twwl75LNtWBRFnuGmy9WZXwSCgu/SEWz2dMJor..NLpcn.
-	}
 
 	reverse_proxy business-intel-backend:8050
 }
@@ -181,9 +191,6 @@ firecrawl.leads2scale.com {
 	}
 	encode gzip
 
-	basic_auth {
-		opsadmin $2a$14$sDsSRl0Twwl75LNtWBRFnuGmy9WZXwSCgu/SEWz2dMJor..NLpcn.
-	}
 
 	reverse_proxy firecrawl-backend:9100
 }
@@ -194,9 +201,6 @@ ollama.leads2scale.com {
 	}
 	encode gzip
 
-	basic_auth {
-		opsadmin $2a$14$sDsSRl0Twwl75LNtWBRFnuGmy9WZXwSCgu/SEWz2dMJor..NLpcn.
-	}
 
 	reverse_proxy ollama:11434
 }
@@ -235,10 +239,13 @@ ai.leads2scale.com {
 		reverse_proxy lgr_connect_gateway:4120
 	}
 
-	# Flowise (LGR Chat brain)
-	handle {
-		reverse_proxy grant_engine_flowise:3000
-	}
+        # Flowise (LGR Chat brain)
+        handle {
+                reverse_proxy grant_engine_flowise:3000 {
+                        header_up Authorization {http.request.header.Authorization}
+                        header_up X-API-Key {http.request.header.X-API-Key}
+                }
+        }
 }
 
 ops.leads2scale.com {
@@ -247,9 +254,25 @@ ops.leads2scale.com {
 	}
 	encode gzip
 
-	basic_auth {
-		opsadmin $2a$14$N.6nYr803aas2Bacf3QzIetfRzr9dQh0OrX9rFKLEfgqKUP2HKE5.
-	}
 
 	reverse_proxy ops-hub-backend:4105
+}
+
+import /opt/infra/caddy/sites/*.caddy
+
+
+demo1.leads2scale.com {
+    encode gzip
+    reverse_proxy wp_demo1_web:80
+}
+
+demo2.leads2scale.com {
+    encode gzip
+    reverse_proxy wp_demo2_web:80
+}
+
+demo3.leads2scale.com {
+    encode gzip
+    reverse_proxy wp_demo3_web:80
+
 }
