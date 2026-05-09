@@ -21,10 +21,11 @@ export default function RootLayout({
         {children}
         <Footer />
 <Script
-          src="https://southsuburbsbest.com/v1/public/widget-loader.js"
-          data-client-id="SSB_PROD"
-          strategy="afterInteractive"
-        />
+  src="https://connect.leads2scale.com/v2/widget.js?v=20260508-4"
+  data-client-id="SSB_PROD"
+  strategy="afterInteractive"
+/>
+
       </body>
     </html>
   );
