@@ -261,6 +261,12 @@ ops.leads2scale.com {
 import /opt/infra/caddy/sites/*.caddy
 
 
+# CC-DEMO-RECOVERY-001: demo2/demo3 upstreams corrected to match the actual
+# running container names (wp_wp-demoN_web, not wp_demoN_web); demo4-6 added
+# to match the containers/networks that already exist (wp_wp-demo4_web,
+# wp_wp-demo5_web, wp_wp-demo6_web). Same containers already serving the
+# hvac/plumbing/electrical/roofing/legal/seniorliving industry-name domains
+# elsewhere in this file -- no WordPress content/config touched.
 demo1.leads2scale.com {
     encode gzip
     reverse_proxy wp_demo1_web:80
@@ -268,11 +274,25 @@ demo1.leads2scale.com {
 
 demo2.leads2scale.com {
     encode gzip
-    reverse_proxy wp_demo2_web:80
+    reverse_proxy wp_wp-demo2_web:80
 }
 
 demo3.leads2scale.com {
     encode gzip
-    reverse_proxy wp_demo3_web:80
+    reverse_proxy wp_wp-demo3_web:80
+}
 
+demo4.leads2scale.com {
+    encode gzip
+    reverse_proxy wp_wp-demo4_web:80
+}
+
+demo5.leads2scale.com {
+    encode gzip
+    reverse_proxy wp_wp-demo5_web:80
+}
+
+demo6.leads2scale.com {
+    encode gzip
+    reverse_proxy wp_wp-demo6_web:80
 }
