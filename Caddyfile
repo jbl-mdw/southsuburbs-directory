@@ -296,3 +296,8 @@ demo6.leads2scale.com {
     encode gzip
     reverse_proxy wp_wp-demo6_web:80
 }
+
+demo7.leads2scale.com {
+    encode gzip
+    reverse_proxy wp_wp-demo7_web:80
+}
