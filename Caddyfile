@@ -98,7 +98,7 @@ automation.leads2scale.com {
 	encode gzip
 
 	@lgr_connect {
-		path /v1/* /connect/v1/* /health
+		path /v1/* /connect/v1/* /health /api/telephony/* /api/voice/*
 	}
 
 	reverse_proxy @lgr_connect lgr_connect_gateway:4120
