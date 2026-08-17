@@ -4,9 +4,10 @@ export const revalidate = 0;
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { getVertical, getScopedEntities } from "@/lib/ssbVertical";
+import { getVertical, getScopedEntities, type SsbEntityFilters } from "@/lib/ssbVertical";
 import { SSB_VISIBILITY_FILTER } from "@/lib/directus";
 import HeroSearch from "./HeroSearch";
+import PropertyFilters from "./PropertyFilters";
 
 export const metadata: Metadata = {
   title: "Real Estate | South Suburbs Best",
@@ -68,12 +69,36 @@ async function getAgentSample(): Promise<Agent[]> {
   }
 }
 
-export default async function RealEstatePage() {
+// REAL-ESTATE-DIRECTORY-PROPERTY-FOUNDATION-001 - real search/filter
+// params for the Directory's own property inventory, mapped straight
+// onto the gateway's real, generic attribute-filter query contract (see
+// SsbEntityFilters / buildPropertyAttributeFilters in server.js). This
+// is Real Estate Directory product surface search, never the generic
+// SSB /category/[slug] or /explore search.
+function parsePropertyFilters(searchParams: { [key: string]: string | string[] | undefined }): SsbEntityFilters {
+  const get = (k: string) => (typeof searchParams[k] === "string" ? (searchParams[k] as string) : undefined);
+  const filters: SsbEntityFilters = {};
+  if (get("city")) filters.city = get("city");
+  if (get("propertyType")) filters.propertyType = get("propertyType");
+  if (get("listingType")) filters.listingType = get("listingType");
+  if (get("minPrice")) filters.minPrice = Number(get("minPrice"));
+  if (get("maxPrice")) filters.maxPrice = Number(get("maxPrice"));
+  if (get("bedrooms")) filters.bedrooms = Number(get("bedrooms"));
+  if (get("bathrooms")) filters.bathrooms = Number(get("bathrooms"));
+  return filters;
+}
+
+export default async function RealEstatePage({
+  searchParams = {},
+}: {
+  searchParams?: { [key: string]: string | string[] | undefined };
+}) {
   const vertical = await getVertical("real-estate");
+  const filters = parsePropertyFilters(searchParams);
   // Public discovery only ever shows real, reviewed/published listings
-  // (status "active") - drafts pending review (per the entity-store.js
-  // governance model) are never publicly displayed.
-  const allFsboEntities = vertical ? await getScopedEntities(SSB_SCOPE_ID, "property") : [];
+  // (status "active") - the gateway itself now enforces this (governance
+  // moved server-side this mission), this filter stays as defense in depth.
+  const allFsboEntities = vertical ? await getScopedEntities(SSB_SCOPE_ID, "property", filters) : [];
   const fsboEntities = allFsboEntities.filter((e) => e.status === "active");
   const agents = await getAgentSample();
 
@@ -199,15 +224,17 @@ export default async function RealEstatePage() {
       <section id="properties" className="bg-slate-50 py-16">
         <div className="mx-auto w-full max-w-6xl px-4">
           <div className="mb-10 text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-slate-900">For Sale By Owner</h2>
+            <h2 className="text-3xl font-bold tracking-tight text-slate-900">Property Listings</h2>
             <p className="mt-1 text-sm text-slate-500">
-              Independent listings from South Suburbs owners selling without an agent.
+              Independent and agent-listed properties in the South Suburbs.
             </p>
           </div>
 
+          <PropertyFilters />
+
           {fsboEntities.length === 0 ? (
             <div className="rounded-2xl bg-white p-10 text-center text-slate-500 shadow">
-              No FSBO listings yet.{" "}
+              No properties match right now.{" "}
               <Link href="/submit-fsbo" className="font-semibold" style={{ color: SSB_PRIMARY_COLOR }}>
                 List your property →
               </Link>
@@ -220,13 +247,26 @@ export default async function RealEstatePage() {
                 const city = formatAttribute(entity.attributes, "city");
                 const beds = formatAttribute(entity.attributes, "bedrooms");
                 const baths = formatAttribute(entity.attributes, "bathrooms");
+                const media = Array.isArray((entity.attributes as { media?: unknown }).media)
+                  ? ((entity.attributes as { media: { url: string; isPrimary?: boolean }[] }).media)
+                  : [];
+                const heroImage = media.find((m) => m.isPrimary) || media[0] || null;
+                const listingAgent = entity.listingAgent;
                 return (
                   <article key={entity.entityId} className="overflow-hidden rounded-2xl bg-white shadow-lg shadow-slate-100">
-                    <div className="flex h-40 items-center justify-center bg-slate-100 text-4xl" aria-hidden>
-                      🏠
-                    </div>
+                    {heroImage ? (
+                      <div className="relative h-40 w-full">
+                        <Image src={heroImage.url} alt={address || "Property photo"} fill className="object-cover" />
+                      </div>
+                    ) : (
+                      <div className="flex h-40 items-center justify-center bg-slate-100 text-4xl" aria-hidden>
+                        🏠
+                      </div>
+                    )}
                     <div className="p-5">
-                      <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800">FSBO</span>
+                      <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800">
+                        {listingAgent ? "Agent Listed" : "FSBO"}
+                      </span>
                       {price && (
                         <p className="mt-3 text-xl font-bold text-slate-900">${Number(price).toLocaleString()}</p>
                       )}
@@ -237,6 +277,14 @@ export default async function RealEstatePage() {
                           {beds ? `${beds} bed` : ""}
                           {beds && baths ? " · " : ""}
                           {baths ? `${baths} bath` : ""}
+                        </p>
+                      )}
+                      {listingAgent && (
+                        <p className="mt-2 text-xs text-slate-500">
+                          Listed by{" "}
+                          <Link href={`/business/${listingAgent.slug}`} className="font-semibold" style={{ color: SSB_PRIMARY_COLOR }}>
+                            {listingAgent.name}
+                          </Link>
                         </p>
                       )}
                       <Link

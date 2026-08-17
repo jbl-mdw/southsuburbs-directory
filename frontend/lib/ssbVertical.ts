@@ -28,11 +28,47 @@ export type SsbVertical = {
   monetizationSurfaces: SsbMonetizationSurface[];
 };
 
+// REAL-ESTATE-DIRECTORY-PROPERTY-FOUNDATION-001 - a resolved relationship
+// edge (e.g. agent_lists_property), resolved server-side by the gateway
+// against the real Directus businesses collection - never a second
+// agent lookup here. `listingAgent`/`directoryOwner`/`leadDestination`
+// are convenience projections of the same real resolution; `brokerage`
+// is a real, disclosed structural gap (no brokerage relationship data
+// exists yet), never a fabricated placeholder.
+export type SsbResolvedBusiness = { id: string; name: string; slug: string; phone: string | null; email: string | null; categorySlug: string | null };
+export type SsbResolvedRelationship = { relationshipKey: string; toEntityId: string; resolved: SsbResolvedBusiness | null };
+export type SsbLeadDestination =
+  | { type: "agent"; name: string; email: string }
+  | { type: "directory_owner"; name: string; email: string }
+  | { type: "platform_default"; clientId: string };
+
 export type SsbScopedEntity = {
   entityId: string;
+  tenantId: string;
   entityType: string;
   attributes: Record<string, unknown>;
   status: string;
+  resolvedRelationships?: SsbResolvedRelationship[];
+  listingAgent?: SsbResolvedBusiness | null;
+  brokerage?: { resolved: false; gapReason: string };
+  directoryOwner?: { name: string; email: string } | null;
+  leadDestination?: SsbLeadDestination;
+};
+
+// REAL-ESTATE-DIRECTORY-PROPERTY-FOUNDATION-001 - the canonical
+// property search/filter field set the gateway's generic
+// attribute-filter mapping understands (see buildPropertyAttributeFilters
+// in server.js). Every field is optional; an empty/undefined filters
+// object is byte-identical to calling getScopedEntities() with none.
+export type SsbEntityFilters = {
+  city?: string;
+  zipcode?: string;
+  propertyType?: string;
+  listingType?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  bedrooms?: number;
+  bathrooms?: number;
 };
 
 export async function getVertical(verticalKey: string): Promise<SsbVertical | null> {
@@ -48,11 +84,17 @@ export async function getVertical(verticalKey: string): Promise<SsbVertical | nu
   }
 }
 
-export async function getScopedEntities(scopeId: string, entityType?: string): Promise<SsbScopedEntity[]> {
+export async function getScopedEntities(scopeId: string, entityType?: string, filters?: SsbEntityFilters): Promise<SsbScopedEntity[]> {
   try {
-    const url = `${GATEWAY_URL}/api/directory-platform/scope/${encodeURIComponent(scopeId)}/entities${
-      entityType ? `?entityType=${encodeURIComponent(entityType)}` : ""
-    }`;
+    const params = new URLSearchParams();
+    if (entityType) params.set("entityType", entityType);
+    if (filters) {
+      for (const [key, value] of Object.entries(filters)) {
+        if (value !== undefined && value !== null && value !== "") params.set(key, String(value));
+      }
+    }
+    const query = params.toString();
+    const url = `${GATEWAY_URL}/api/directory-platform/scope/${encodeURIComponent(scopeId)}/entities${query ? `?${query}` : ""}`;
     const res = await fetch(url, { cache: "no-store" });
     if (!res.ok) return [];
     const json = await res.json();
