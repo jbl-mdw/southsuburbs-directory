@@ -66,6 +66,7 @@ This is the closest thing to a **master template system** in the codebase: a fra
 | Directus twin runtime | `lib/runtime/business-twin/BusinessTwinRuntime.js` | Present | Reads Directus `business_twins` |
 | Onboarding twins | `lib/client-onboarding-engine/` + `assets/client-onboarding/clients/*/client-record.json` | Live | **81 records** (64 HVAC, mostly prospect demos); 17 twin sections (services, audiences, objectives, geography, website, revenueIntelligence, reputation, brandVoice, sellablePacks, seoIntelligence, offerIntelligence, contact, …) |
 | Twin manufacturer job | `seeds/hermes-manufacturing/jobs-universal-twin-manufacturer.js` | Present | |
+| Hermes pipeline runtime | `hermes-pipeline-runtime/src/stages/` (10 stages) | Certified per stage, with scope limits | Stages 1–5 assemble a twin from a domain; **Stage 5 doesn't persist**; Stage 9 has no executors. See `06` §2 |
 | **Two twin stores** | Directus `business_twins` vs file-based `client-record.json` | **Gap** | AI-employee provisioning binds to the file twin id (`business_twin_key: CL-…`) |
 
 ## 7. Packs, solutions and AI employees
@@ -84,7 +85,7 @@ This is the closest thing to a **master template system** in the codebase: a fra
 | Connectors | `lib/integration-runtime/connectors/` | cal-com, flowise, google-places-reviews, imap, knowledge-source, linki, smtp, stripe, twilio (+ planned) |
 | Orchestrations | `lib/integration-runtime/orchestration/` | booking, checkout, universal-provisioning |
 | Runtime seeds | `seeds/` (20) | activation, asset-intelligence, client-success, commercial-intelligence, dynamic-offer, executive-assistant(-runtime), executive, governance-quality, hermes-manufacturing, market-intelligence, overlay-manufacturing, platform-registries, product-manufacturing, prospector, provider-lifecycle, revenue, solution-provisioner |
-| n8n | `shared_n8n` container; `southsuburbs-directory/n8n-lead-submission-workflow.json`; repo `n8n-workflow-backups` (not inspected) | Unverified beyond the SSB workflow |
+| n8n | `shared_n8n` container; `southsuburbs-directory/n8n-lead-submission-workflow.json`; `n8n-workflow-backups` (last export 2025-10-27: 20 workflows, 4 active) | Lead intake (HS Master-Intake), Stripe status → CRM, scrapers, SEO research. No site or directory templates. See `06` §3 |
 | Flowise chatflows | `rollback/lgr-template-chatflow-CERTIFIED-2026-08-16….json` | Certified template chatflow snapshot |
 
 ## 9. Full engine inventory (`agent.klirtrak/lib/`, 55 directories)

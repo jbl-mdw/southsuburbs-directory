@@ -33,6 +33,9 @@ A reuse-first plan to turn the inventoried assets into one manufacturing line. *
 | 2.3 Overlay inheritance | `overlay-generator.js` | Inherit the vertical's **industry** overlay; geography from the tenant's market, not hard-coded SSB |
 | 2.4 Canonical twin | Directus `business_twins` (Hermes spec) + file twins | Pick a canonical store and add a sync adapter; keep `business_twin_key` stable |
 | 2.5 Next.js adapter (optional) | adapter auto-discovery in `adapters/registry.js` | Add a Next.js/static adapter so SSB-style sites can be manufactured |
+| 2.6 Twin persistence | Hermes Stage 5 (certified assembly) | Persist Stage 5 output into the store chosen in 2.4 (separately approved, as Stage 5's certification requires) |
+| 2.7 First Hermes executor | Stage 9 `executor-registry.js` + gateway Prospector | Register a `prospector:<action>` executor that calls the gateway; keep it behind Stage 8 authorization |
+| 2.8 Product fit for directories | `seeds/lgr-products.seed.json` (Stage 6 input) | Add the three SSB directory offers with `recommended_for` tags matching twin fields; replace the file-path dependency with an API or shared package |
 
 ## Phase 3: Industry expansion (reuse the HVAC/Real Estate pattern)
 | Step | Reuses | Change |
@@ -50,6 +53,8 @@ The repositories don't label work as OC1 or OC2, so this table assigns by **asse
 | `southsuburbs-directory` sales page + `docs/forge-template-mapping/` (this branch) | **CC** (this session) | Read |
 | `law-automation-suite` legal raw material + license gate | The stream currently committing there (last 2026-10-07) | Read only |
 | Gateway engines (`agent.klirtrak/lib/**`) | Gateway / manufacturing stream | Read; propose changes via the owner |
+| `hermes-pipeline-runtime` (stages, certification) | Hermes stream (last commit 2026-07-26) | Read; executors and persistence via the owner |
+| `shared_n8n` workflows | Founder to assign (Stripe and intake flows overlap the gateway) | Read only |
 | Shared hot registries (policies, overlays, rate card), live Caddy, shared widget, gateway restarts | **One named owner** (founder to assign) | Request changes; never write directly |
 | Production deploys / restarts | Founder-authorized only | — |
 
@@ -64,3 +69,4 @@ Coordination rule proposed: before any change to a shared hot asset, announce it
 | 1.5 | None beyond 1.2 (frontend, this branch) |
 | 2.x | Gateway owner + founder (architecture) |
 | 3.2 | Legal/license review |
+| n8n token rotation (`06` §3.3) | Founder: rotate inline tokens, decide on backup-repo history |

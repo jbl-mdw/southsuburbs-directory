@@ -27,7 +27,8 @@ Certification suites were **read, not executed**; live systems were not reachabl
 | Home Services Growth OS (solution) | **Partial** | Solution file (5 industries, 8 packages, one-click) | Overlays and verticals exist only for HVAC; plumbing, electrical, roofing and restoration need overlays |
 | Legal products (OVL/PK/DOC/PORTAL) | **Partial / in flight** | `ssb-legal` overlay, `legal` vertical, legal tenant; `law-automation-suite` raw material | License gate; only LexNebulis (Apache-2.0) and OpenLawFirm (MIT) are reusable |
 | Industry genome-driven manufacturing | **Not started** | 1 real genome (NAICS 72) | Populate genomes for the 3 directory-ready industries |
-| Business Twin (single source) | **Partial** | 81 file twins + Directus spec/runtime | Choose the canonical store; sync or migrate |
+| Business Twin (single source) | **Partial** | 81 file twins + Directus spec/runtime; Hermes Stages 1–5 assemble twins (certified, not persisted) | Choose the canonical store; approve Stage 5 persistence into it |
+| Hermes-driven prospecting (twin → decision → action) | **Partial** | Hermes Stages 1–10 certified with scope limits | Register a first Stage 9 executor (Prospector) in the gateway; add `recommended_for` tags for directory offers |
 | Onboarding automation | **Ready** | 10-step `onboardClient()` called from the Stripe webhook | — |
 
 ## 2. SSB real estate directories: what blocks automated sale today
@@ -57,5 +58,6 @@ These are touched by several work streams, and a change reaches production immed
 - `ssb_caddy` live Caddyfile (diverged from git)
 - `app/public/v2/widget.js` (shared by every site)
 - `lgr_connect_gateway` container (single point of failure; manual restarts)
+- `seeds/lgr-products.seed.json` (read by Hermes Stage 6 via file path from another repo)
 
 The INCIDENT report recommends the founder assign a single owner and change procedure for each.

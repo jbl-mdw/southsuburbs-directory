@@ -12,6 +12,7 @@ Read-only inventory and mapping of LGR's existing website, landing-page, ecommer
 | 3 | [`03_TWIN_OVERLAY_PACK_MAPPING.md`](03_TWIN_OVERLAY_PACK_MAPPING.md) | How a Business Twin, overlays and packs compose into a manufactured product (worked example: the SSB directories) |
 | 4 | [`04_MANUFACTURING_READINESS_REPORT.md`](04_MANUFACTURING_READINESS_REPORT.md) | What can be manufactured end to end today, what's partial, and the smallest next step for each |
 | 5 | [`05_INTEGRATION_PLAN.md`](05_INTEGRATION_PLAN.md) | A phased, reuse-first plan, with ownership boundaries and the authorizations it needs |
+| 6 | [`06_EXTENDED_SOURCES.md`](06_EXTENDED_SOURCES.md) | Second pass: Hermes pipeline runtime, n8n workflow backups, and seven stub repositories |
 
 ## Sources (read-only snapshots)
 | Repository | Commit | Date | Role in this mapping |
@@ -22,8 +23,11 @@ Read-only inventory and mapping of LGR's existing website, landing-page, ecommer
 | `jbl-mdw/lgr-architecture` | `74dd075` | 2026-07-24 | Specifications: Hermes intelligence pipeline (incl. Stage 5 Business Twin Assembly), Prospector spec |
 | `jbl-mdw/ops-hub-master-plan` | `db41344` | 2026-07-26 | Ops hub infrastructure plan / compose |
 | `jbl-mdw/lgr-runtime-dashboard` | `4ca2881` | 2026-08-01 | LGR Command Center dashboard (runtime hierarchy, Receptionist workspace) |
+| `jbl-mdw/hermes-pipeline-runtime` | `6299181` | 2026-07-26 | Hermes 10-stage pipeline kernel; per-stage certification (see `06` §2) |
+| `jbl-mdw/n8n-workflow-backups` | `6e43b34` | 2025-10-27 | Nightly n8n exports; lead-intake and scraper workflows (see `06` §3) |
+| `ssb-pages`, `nextjs-medusa-visual-builder`, `site-cloner`, `universal-content-engine`, `hoa-connect-directory-app`, `localrank-ai`, `firecrawl-ingestion-engine` | — | — | Empty or plan-only; no templates (see `06` §1) |
 
-**Not inspected** (exist in the account, may hold more templates): `hermes-pipeline-runtime`, `n8n-workflow-backups`, `ssb-pages`, `nextjs-medusa-visual-builder`, `site-cloner`, `universal-content-engine`, `hoa-connect-directory-app`, `localrank-ai`, `firecrawl-ingestion-engine`, and older single-purpose repos. Production servers (WordPress demo containers, Directus, n8n, Flowise) were **not reachable** from this sandbox; their contents are inferred only from configs and snapshots in git.
+**Not inspected:** older single-purpose repositories in the account. Production servers (WordPress demo containers, Directus, n8n, Flowise) were **not reachable** from this sandbox; their contents are inferred only from configs and snapshots in git.
 
 ## Terminology
 - **Forge**: the repositories don't define a "Forge" product module. The only explicit use is the destination tag `FORGE = LGR Forge` in `law-automation-suite/raw-material/canary/extraction/MANIFEST.md`, alongside `OVL` (Legal Industry Overlay), `PK` (Sub-Niche Packs), `BT` (Business Twin), `REC`, `PROS`, `CLOSE`, `EA`, `DOC` and others. This mapping treats **Forge** as the manufacturing layer that turns those raw materials and existing templates into sellable products.
