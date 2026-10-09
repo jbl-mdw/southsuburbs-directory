@@ -12,7 +12,8 @@
 // the existing published sales inbox instead, so the page still
 // converts without creating live intake records.
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { CONFIGURATIONS, SALES_CONTACT, type ConfigKey } from "./content";
 
 const LEAD_ENDPOINT = "https://automation.leads2scale.com/v1/public/directory-lead";
@@ -20,8 +21,20 @@ const INTAKE_WORKFLOW_KEY = process.env.NEXT_PUBLIC_ZB_INTAKE_WORKFLOW_KEY || ""
 
 const ADD_ONS = ["AI Receptionist", "AI Prospector", "AI Executive Assistant", "Featured marketplace placement"];
 
+function isConfigKey(value: string | null): value is ConfigKey {
+  return CONFIGURATIONS.some((c) => c.key === value);
+}
+
 export default function DirectoryIntakeForm() {
-  const [configuration, setConfiguration] = useState<ConfigKey>("solo-agent");
+  // Buyer-specific CTAs link to ?directory=<key>#get-started so the form
+  // opens with the configuration the prospect was just reading about.
+  const searchParams = useSearchParams();
+  const requested = searchParams.get("directory");
+  const [configuration, setConfiguration] = useState<ConfigKey>(isConfigKey(requested) ? requested : "solo-agent");
+
+  useEffect(() => {
+    if (isConfigKey(requested)) setConfiguration(requested);
+  }, [requested]);
   const [name, setName] = useState("");
   const [company, setCompany] = useState("");
   const [email, setEmail] = useState("");

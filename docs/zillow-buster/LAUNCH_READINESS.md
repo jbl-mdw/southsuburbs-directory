@@ -48,40 +48,51 @@ Page: `frontend/app/zillow-buster/` → route `/zillow-buster` (the slug is a pl
 
 ## 2. Competitor sales-page analysis (Deliverable 2)
 
-### Access limitation (read first)
-`https://www.easyrealestatedirectorypro.com/?tid=1` and `https://www.easyrealestatedirectorypro.com/` **could not be loaded**. This cloud environment's network policy rejects the host (proxy 403 on CONNECT). The page itself was **not read**. The only information available came from search-engine indexing of the vendor's page:
+### Why the page could not be inspected directly
+- **Exact cause:** this cloud environment's **network policy**. Every outbound request goes through the session's egress proxy, which answered `403` to `CONNECT www.easyrealestatedirectorypro.com:443` and `CONNECT easyrealestatedirectorypro.com:443` (proxy log: `connect_rejected`, "policy denial"). WebFetch failed the same way (`getaddrinfo ENOTFOUND`). It is **not** a problem with the site, which loads normally in the founder's browser.
+- **Scope of the block:** the environment runs on a restricted allowlist. A control request to `www.google.com` is refused too, so general web hosts are not reachable.
+- **Fix:** yes, a permitted configuration resolves it. In the cloud environment settings (environment menu in the session title bar → Edit → Network access), add `easyrealestatedirectorypro.com` and `www.easyrealestatedirectorypro.com` under **Allowed domains**, or choose a broader access level. Docs: https://code.claude.com/docs/en/cloud-environments#network-access
+- **What was used instead:** 10 founder-supplied screenshots of the `?tid=1` page (hero through FAQ). The page's video content, the FAQ answers, the page footer and checkout were not visible and are not analyzed.
 
-- **Positioning:** a *white-label property directory platform* that a marketer "sets up once and sells as a monthly recurring service to real estate agents and brokerages." Title: "Earn Monthly From Real Estate Agents."
-- **Pain hook:** agents depend on a portal where leads go to whoever pays for premium placement; the directory is an alternative the agent controls.
-- **Features named:** property listing fields, a **showing-request system on every listing**, **agent-to-property linking** for multiple agents, Google-indexed agent profile pages, buyer filters by city/price/bedrooms.
-- **Trust anchor:** built on the vendor's existing EasyDirectoryPro platform "already trusted by thousands of digital marketers."
-- **Market-size claim:** "2 million agents, less than 10% served" (unverified vendor figure).
-- **Offer mechanics:** low-cost trial for the first 30 days, then a higher monthly fee, "no lock-in, cancel anytime." (Their prices are not reproduced or reused here.)
-- **Not determinable without access:** section order, visuals/video, bonuses, guarantee, FAQ, testimonials, mobile presentation, FSBO/homeowner listing pitch.
+### Their sales sequence (from the screenshots)
+1. **Nav:** Why Real Estate · Features · How It Works · Use Cases · Pricing · "Get Access Now".
+2. **Hero:** "White-label real estate directory **for digital marketers**." The headline names Zillow and says every lead comes directly to the agent. Offer: **$27 for 30 days, then $47/mo, no lock-in**. CTA "Get Instant Access for $27 →". It mentions 3 done-for-you bonuses.
+3. **Sales video** (~16½ min) with the founder on camera: "One afternoon to set up. $200–$500/month per client."
+4. **Trust strip:** 2M+ agents · showing-request lead capture · clients don't cancel · data lives in your platform.
+5. **Why this niche:** 4 numbered reasons (high-value deals, agents already pay for portal placement, under-served market, instant ROI).
+6. **The Numbers:** 8 stat tiles (2M+, 97%, 73%, 90%, $1.8T, <10%, 6.7M, $9,400). No sources are shown.
+7. **Frictionless ROI:** agent income bars by tier, plus "one showing request covers the fee."
+8. **Problem:** two columns, ✗ "The Zillow Problem" vs ✓ "What You Give Them — Without Replacing Anything."
+9. **"Zillow Plus" framework:** "Zillow is for reach. Your directory is for capture." A one-sentence pitch and "Two platforms. Two purposes. Zero conflict."
+10. **Introducing / What's included:** listing management, agent profiles and linking, showing-request system.
+11. **See a Real Estate Directory:** "See Live Demo" button.
+12. **How it works:** 3 steps (live within the hour → demo to agents → onboard and collect).
+13. **Use cases:** "One Platform. Four Ways": Solo Agents, Independent Brokerages, City-Wide Property Marketplaces, Property Developers (each with a suggested resale price).
+14. **Retention:** 4 reasons clients stay (their leads live in the platform, results arrive monthly, referrals, the fee is covered by one showing).
+15. **Second income stream:** FSBO lead capture with suggested plans Free / $197 / $497 per month.
+16. **Bonuses:** outreach email campaign, 21-slide sales deck, 10,000 agent leads.
+17. **FAQ:** 9 objections (technical skills, product differences, after the trial, what to charge, why pay when on Zillow, if it doesn't work, FSBO, "stop using Zillow?", "my broker handles marketing").
 
-Everything below §2 that refers to their page draws only on the points above. Nothing else about their page is inferred or invented. **To complete this analysis, allow `easyrealestatedirectorypro.com` in the environment's network settings and re-run, or paste the page text.**
+### Adopted, in our own words
+| Their mechanic | On the Zillow Buster page |
+|---|---|
+| Reach vs capture framing | "Portals for reach. Your directory for capture." section, plus a pull-quote pitch line |
+| ✗/✓ two-column problem | "Relying only on third-party portals" vs "With your own Zillow Buster directory" |
+| Trust strip under hero | 4-point strip (live SSB directory, showing requests, your domain, marketplace included) |
+| Commission-anchored ROI | Interactive break-even calculator on the prospect's **own** commission. No market stats, no promised leads |
+| Four use cases | Four configurations, each with its own section, headline, outcomes, preview and pre-selected CTA |
+| Live demo button | "Explore the live SSB Real Estate Directory" (real, running `/real-estate`) |
+| Objection FAQ | Added "why own a directory if I'm on Zillow", "do I need technical skills", "my broker handles marketing" |
 
-### What works in their sales mechanics (from what's visible)
-1. **Outcome-first headline** (money, recurring). The page sells a business result before it explains features.
-2. **One sharp enemy:** pay-to-play portal leads. It's simple and emotional.
-3. **Concrete feature proof** that maps to the pain: a showing request on every listing, agent-to-property linking.
-4. **Borrowed trust** from a parent platform.
-5. **Low-friction entry offer** (cheap trial, cancel anytime) that lowers commitment risk.
+### Deliberately not adopted
+- **Unsourced statistics** (2M agents, 97%, 73%, 90%, etc.): we can add them if they're sourced and approved.
+- **Claims about how Zillow routes leads** ("to whoever paid for Premier"): this is a factual claim about a competitor and needs legal sign-off. Our copy talks about "third-party portals" generically.
+- **"Clients don't cancel" / retention promises:** we have no customer history to support them.
+- **Price, trial and bonuses:** not approved. The page has founder-editable slots (`content.ts`: `price`, `introOffer`, `LAUNCH_OFFER`).
+- **FSBO income stream:** not an authorized launch product.
 
-### Where Zillow Buster is structurally stronger, and how the page uses it
-| Their approach | Zillow Buster advantage | Used on page |
-|---|---|---|
-| Sells software to *resellers* who must find agents | Sells **done-for-you** directories directly to agents/brokerages/builders; we manufacture | Hero, How It Works ("done for you") |
-| One product shape | **Four distinct configurations** (Solo, Brokerage, Builder, Marketplace) | Section D, pricing, intake form |
-| Directory sits alone | **Built-in regional distribution:** every subscription includes an SSB Marketplace listing | Section G, FAQ, comparison table |
-| Directory only | **AI Employees upsell** (Receptionist, Prospector, Executive Assistant) | Section H, intake add-on chips |
-| Generic platform trust | **Proof you can click:** the live SSB Real Estate Directory | "Explore the live SSB Real Estate Directory" CTA |
-
-### Recommended next improvements (founder-approved only)
-- Add a **founder-approved entry offer** (e.g. founding-member pricing or first-month offer). The page's `introOffer` field renders it as soon as it's set. No deadline or scarcity unless it's real (e.g. a genuine cap on founding slots per city).
-- **City exclusivity** ("one featured agent per city") is the honest scarcity lever this model supports. It needs a founder decision.
-- Add **testimonials/case results** once the first customers launch. None exist today, and none were fabricated.
-- **Reseller/licensing track** (their whole model) as a future LGR offer: "Regional directory licensing."
+### Positioning difference that matters
+They sell a **reseller tool to marketers**, who must then sell to agents. Zillow Buster sells **done-for-you directories directly to the agent, brokerage or builder**, and includes regional distribution (SSB Marketplace) that their product doesn't offer. Their "city-wide marketplace" use case is what SSB already is. Their reseller model maps to LGR's future "regional directory licensing" opportunity.
 
 ---
 
@@ -89,16 +100,17 @@ Everything below §2 that refers to their page draws only on the points above. N
 
 | File | Purpose |
 |---|---|
-| `frontend/app/zillow-buster/page.tsx` | The page (sections A–K) |
+| `frontend/app/zillow-buster/page.tsx` | The page |
 | `frontend/app/zillow-buster/content.ts` | **All founder-editable sales facts**: configurations, pricing (`price: null` until approved), intro offers, FAQ, AI upgrades, contact |
 | `frontend/app/zillow-buster/ProductPreviews.tsx` | Static product previews mirroring the live `/real-estate` component markup, with sample data and honest status badges |
-| `frontend/app/zillow-buster/DirectoryIntakeForm.tsx` | Conversion form; **live submission is off by default** |
+| `frontend/app/zillow-buster/DirectoryIntakeForm.tsx` | Conversion form; **live submission is off by default**; preselects the configuration from `?directory=` |
+| `frontend/app/zillow-buster/BreakEvenCalculator.tsx` | "One closing" ROI calculator on the prospect's own numbers |
 
-Sections: A Hero · B Problem · C Solution and comparison table · D Four configurations · E Product previews and live-demo link · F How it works (48h framed as a *target*) · G Marketplace advantage (normal rotation included, featured optional) · H AI upgrades · I Pricing (pending-approval state) · J FAQ (all 10 required questions) · K Final conversion and intake. There is also a Zillow trademark non-affiliation disclaimer.
+Section order (v2, conversion-focused): Hero with "I'm a…" buyer chips → trust strip → ✗/✓ problem → "Portals for reach, your directory for capture" → four-way chooser → preview legend → Solo Agent / Brokerage / Builder sections (headline, outcomes, preview, CTA that preselects the intake form) → SSB Marketplace (how it connects, regional map, included normal rotation vs marketplace-only vs **featured placement upsell**) → break-even calculator → how it works (48h framed as a *target*) → **AI Employees add-ons** → pricing (founder-editable, plus an add-ons table) → FAQ (13 questions, all 10 required) → final CTA and intake → Zillow non-affiliation disclaimer.
 
 **Guardrails built in**
 - No prices, offers, bonuses or deadlines are shown until they're set in `content.ts`.
-- Preview badges: *Live on SSB today* / *Built on live components · configured per customer* / *Concept preview · in launch pipeline*.
+- Every preview frame carries a **"Preview · sample data"** ribbon plus a status badge: *Live on SSB today* (runs on southsuburbsbest.com/real-estate; not yet certified on a customer domain) / *Built from live components* / *Concept · not yet built*. A legend explains the badges before the first buyer section.
 - No claim of Zillow inventory, affiliation or replacement. Problem copy talks about "third-party portals" generically.
 - Previews never submit. A working showing form on a sales page would inject fake requests into live lead routing.
 - **Intake form:** with no `NEXT_PUBLIC_ZB_INTAKE_WORKFLOW_KEY`, it makes **zero network calls** and hands the prospect a pre-filled email to the existing published sales inbox (from `/contact`) plus the phone number. When a founder-approved workflow key is set at build time, it POSTs to the existing canonical `/v1/public/directory-lead` with `source: "zillow_buster_sales_page"`, the same endpoint the showing form uses.
@@ -170,24 +182,28 @@ Sections: A Hero · B Problem · C Solution and comparison table · D Four confi
 
 ## 7. Preview, tests and founder decisions (Deliverable 7)
 
-### Tests run
+### Tests run (v2)
 | Check | Result |
 |---|---|
-| `tsc --noEmit` (baseline and after) | ✅ Clean |
-| `next build` with offline env | ✅ `/zillow-buster` compiles and builds; remaining failures are pre-existing Directus-dependent static pages (§6.6) |
-| Playwright desktop 1366px | ✅ Renders all sections, 0 horizontal overflow |
-| Playwright mobile 390px | ✅ Page content fits; only overflow is the pre-existing shared Navbar (§6.4) |
-| Intake form (preview mode) | ✅ Brokerage selected → agent-count field appears → submit → pre-filled `mailto:` with all fields; **0 POST requests made** |
-| Live intake / billing / production | Not touched (no deploy, no submission, no service restarts) |
+| `tsc --noEmit` | ✅ Clean |
+| `next build` with offline env | ✅ `/zillow-buster` builds; remaining failures are pre-existing Directus-dependent static pages (§6.6) |
+| Playwright desktop 1440px | ✅ All sections render; 0 overflow in page content; all anchors (`#solo-agent`, `#brokerage`, `#builder`, `#marketplace`, `#directories`, `#pricing`, `#get-started`) exist |
+| Playwright mobile 390px | ✅ 0 overflow in page content after a `min-w-0` grid fix; the shared Navbar still overflows (§6.4, pre-existing) |
+| Buyer CTA → intake | ✅ "Build my brokerage directory" → `?directory=brokerage#get-started`, Brokerage preselected, form scrolled into view; direct link `?directory=builder` preselects Builder |
+| Break-even calculator | ✅ $12,000 × 2 closings → $24,000 / $2,000 a month |
+| Intake form (preview mode) | ✅ Submit → pre-filled `mailto:`; **0 POST requests** across all tests |
+| Images | ✅ Map loads; added `sizes` so phones get ~828px instead of a 3840px / 1.9 MB PNG |
+| Live intake / billing / production | Not touched |
 
 ### Changed files
-- `frontend/app/zillow-buster/page.tsx` (new)
-- `frontend/app/zillow-buster/content.ts` (new)
-- `frontend/app/zillow-buster/ProductPreviews.tsx` (new)
-- `frontend/app/zillow-buster/DirectoryIntakeForm.tsx` (new)
-- `docs/zillow-buster/LAUNCH_READINESS.md` (new)
+- `frontend/app/zillow-buster/page.tsx`
+- `frontend/app/zillow-buster/content.ts`
+- `frontend/app/zillow-buster/ProductPreviews.tsx`
+- `frontend/app/zillow-buster/DirectoryIntakeForm.tsx`
+- `frontend/app/zillow-buster/BreakEvenCalculator.tsx` (new in v2)
+- `docs/zillow-buster/LAUNCH_READINESS.md`
 
-No existing file was modified.
+No file outside these two folders was modified (shared navigation, layout, credentials, integrations and billing are untouched).
 
 ### Decisions requiring founder authorization
 1. Prices, cadence and intro offer for each of the 4 configurations (and featured placement / AI add-ons).
@@ -198,3 +214,5 @@ No existing file was modified.
 6. Lead/data ownership terms for subscriber directories (not stated on the page).
 7. Whether to surface the Builder configuration as "concept" or hold it until built.
 8. Honest scarcity, if any (e.g. founding-member cap per city).
+9. Whether to cite any market statistics (each needs a source).
+10. Whether the page may make any specific claim about how portals route leads (legal).

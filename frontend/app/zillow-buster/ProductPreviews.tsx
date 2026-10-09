@@ -3,36 +3,64 @@
 // represents (cited per preview) so prospects see the actual product,
 // but renders SAMPLE data and never submits anything: a working showing
 // form on a sales page would push fake requests into live lead routing.
-// Every preview carries an honest status badge from content.ts.
+// Every preview carries a "Preview · sample data" ribbon plus an honest
+// status badge (content.ts PREVIEW_STATUS_*), so no illustration can be
+// mistaken for certified, customer-domain functionality.
 
 import Link from "next/link";
-import { Bath, BedDouble, Building2, CalendarCheck, Home, MapPin, Ruler, Search, Users } from "lucide-react";
-import { PREVIEW_STATUS_LABEL, type PreviewStatus } from "./content";
+import { Bath, BedDouble, CalendarCheck, Home, MapPin, Ruler, Search, Star } from "lucide-react";
+import { PREVIEW_STATUS_DETAIL, PREVIEW_STATUS_LABEL, type PreviewStatus } from "./content";
 
 const PRIMARY = "#1e3a5f";
 
-function StatusBadge({ status }: { status: PreviewStatus }) {
+export function StatusBadge({ status }: { status: PreviewStatus }) {
   const tone =
     status === "live"
       ? "bg-emerald-50 text-emerald-700 ring-emerald-200"
       : status === "partial"
         ? "bg-sky-50 text-sky-700 ring-sky-200"
         : "bg-amber-50 text-amber-800 ring-amber-200";
+  const dot = status === "live" ? "bg-emerald-500" : status === "partial" ? "bg-sky-500" : "bg-amber-500";
   return (
-    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold ring-1 ${tone}`}>
+    <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ring-1 ${tone}`}>
+      <span className={`h-1.5 w-1.5 rounded-full ${dot}`} aria-hidden />
       {PREVIEW_STATUS_LABEL[status]}
     </span>
   );
 }
 
+export function PreviewLegend() {
+  const statuses: PreviewStatus[] = ["live", "partial", "concept"];
+  return (
+    <div className="rounded-2xl bg-slate-50 p-5 ring-1 ring-slate-200">
+      <p className="text-sm font-semibold text-slate-900">How to read these previews</p>
+      <p className="mt-1 text-xs text-slate-500">
+        Every screen on this page is an illustration with sample data, not a real listing, agent or customer. Badges show
+        how far along each feature is.
+      </p>
+      <ul className="mt-3 grid gap-2 sm:grid-cols-3">
+        {statuses.map((s) => (
+          <li key={s} className="text-xs text-slate-600">
+            <StatusBadge status={s} />
+            <p className="mt-1.5">{PREVIEW_STATUS_DETAIL[s]}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 function BrowserFrame({ url, children }: { url: string; children: React.ReactNode }) {
   return (
-    <div className="overflow-hidden rounded-2xl bg-white shadow-2xl shadow-slate-900/20 ring-1 ring-slate-200">
+    <div className="relative overflow-hidden rounded-2xl bg-white shadow-2xl shadow-slate-900/20 ring-1 ring-slate-200">
       <div className="flex items-center gap-2 border-b border-slate-100 bg-slate-50 px-4 py-2.5">
         <span className="h-2.5 w-2.5 rounded-full bg-red-300" />
         <span className="h-2.5 w-2.5 rounded-full bg-amber-300" />
         <span className="h-2.5 w-2.5 rounded-full bg-emerald-300" />
-        <span className="ml-3 truncate rounded-md bg-white px-3 py-0.5 text-[11px] text-slate-400 ring-1 ring-slate-200">{url}</span>
+        <span className="ml-3 min-w-0 truncate rounded-md bg-white px-3 py-0.5 text-[11px] text-slate-400 ring-1 ring-slate-200">{url}</span>
+        <span className="ml-auto shrink-0 rounded bg-slate-900/80 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white">
+          Preview · sample data
+        </span>
       </div>
       {children}
     </div>
@@ -42,7 +70,7 @@ function BrowserFrame({ url, children }: { url: string; children: React.ReactNod
 const SAMPLE_PROPERTIES = [
   { price: 389000, address: "Sample listing · Maple Ct", city: "Homewood", beds: 4, baths: 2.5, tag: "Agent Listed", tone: "from-sky-200 to-sky-400" },
   { price: 274500, address: "Sample listing · Oak Ave", city: "Flossmoor", beds: 3, baths: 2, tag: "Agent Listed", tone: "from-emerald-200 to-emerald-400" },
-  { price: 512000, address: "Sample listing · Prairie Ln", city: "Frankfort", beds: 5, baths: 3, tag: "New Construction", tone: "from-amber-200 to-amber-400" },
+  { price: 512000, address: "Sample listing · Prairie Ln", city: "Frankfort", beds: 5, baths: 3, tag: "Agent Listed", tone: "from-amber-200 to-amber-400" },
 ];
 
 // Mirrors the property card in app/real-estate/page.tsx.
@@ -68,7 +96,7 @@ function PropertyCard({ p }: { p: (typeof SAMPLE_PROPERTIES)[number] }) {
 }
 
 // Hero visual: a solo agent's branded directory homepage. Mirrors
-// app/real-estate/HeroSearch.tsx + PropertyFilters.tsx.
+// app/real-estate/HeroSearch.tsx + the property grid in page.tsx.
 export function DirectoryHomepagePreview() {
   return (
     <BrowserFrame url="www.youragentbrand.com">
@@ -105,17 +133,21 @@ export function DirectoryHomepagePreview() {
 }
 
 // Mirrors app/real-estate/property/[id]/page.tsx + ShowingInquiryForm.tsx.
-function PropertyDetailPreview() {
+export function PropertyDetailPreview() {
   return (
     <BrowserFrame url="www.youragentbrand.com/property/…">
       <div className="p-5">
-        <div className="flex h-32 items-center justify-center rounded-xl bg-gradient-to-br from-sky-200 to-sky-400" aria-hidden>
+        <div className="flex h-36 items-center justify-center rounded-xl bg-gradient-to-br from-sky-200 to-sky-400" aria-hidden>
           <Home className="h-12 w-12 text-white/90" />
         </div>
-        <span className="mt-4 inline-block rounded-full bg-amber-100 px-2.5 py-0.5 text-[11px] font-semibold text-amber-800">Agent Listed</span>
-        <h3 className="mt-2 text-lg font-bold text-slate-900">Sample listing · Maple Ct</h3>
-        <p className="text-xs text-slate-500">Homewood, IL</p>
-        <p className="mt-2 text-xl font-bold" style={{ color: PRIMARY }}>$389,000</p>
+        <div className="mt-4 sm:flex sm:items-start sm:justify-between sm:gap-4">
+          <div>
+            <span className="inline-block rounded-full bg-amber-100 px-2.5 py-0.5 text-[11px] font-semibold text-amber-800">Agent Listed</span>
+            <h3 className="mt-2 text-lg font-bold text-slate-900">Sample listing · Maple Ct</h3>
+            <p className="text-xs text-slate-500">Homewood, IL</p>
+          </div>
+          <p className="mt-2 text-xl font-bold sm:mt-6" style={{ color: PRIMARY }}>$389,000</p>
+        </div>
         <div className="mt-3 flex gap-4 text-xs text-slate-700">
           <span><b>4</b> bed</span>
           <span><b>2.5</b> bath</span>
@@ -140,7 +172,7 @@ function PropertyDetailPreview() {
           <div className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-[#1e3a5f] px-4 py-1.5 text-[11px] font-semibold text-white">
             <CalendarCheck className="h-3 w-3" /> Request Showing
           </div>
-          <p className="mt-2 text-[10px] text-slate-500">Goes straight to the listing agent.</p>
+          <p className="mt-2 text-[10px] text-slate-500">Request goes to the listing agent for follow-up.</p>
         </div>
       </div>
     </BrowserFrame>
@@ -149,15 +181,19 @@ function PropertyDetailPreview() {
 
 // Mirrors the agent cards in app/real-estate/page.tsx, arranged as a
 // brokerage roster.
-function BrokerageRosterPreview() {
+export function BrokerageRosterPreview() {
   const agents = [
-    { initials: "AL", name: "Agent One", area: "Orland Park", listings: 6 },
-    { initials: "MR", name: "Agent Two", area: "Tinley Park", listings: 4 },
-    { initials: "JS", name: "Agent Three", area: "Frankfort", listings: 9 },
-    { initials: "KT", name: "Agent Four", area: "Homewood", listings: 3 },
+    { initials: "A1", name: "Agent One", area: "Orland Park", listings: 6 },
+    { initials: "A2", name: "Agent Two", area: "Tinley Park", listings: 4 },
+    { initials: "A3", name: "Agent Three", area: "Frankfort", listings: 9 },
+    { initials: "A4", name: "Agent Four", area: "Homewood", listings: 3 },
   ];
   return (
     <BrowserFrame url="www.yourbrokerage.com/agents">
+      <div className="bg-[#1e3a5f] px-5 py-4 text-white">
+        <p className="text-sm font-bold">Your Brokerage</p>
+        <p className="text-[11px] text-white/70">Serving the South Suburbs</p>
+      </div>
       <div className="p-5">
         <p className="text-sm font-bold text-slate-900">Our Agents</p>
         <p className="text-[11px] text-slate-500">Every listing links to its listing agent.</p>
@@ -178,15 +214,16 @@ function BrokerageRosterPreview() {
   );
 }
 
-function BuilderCommunityPreview() {
+export function BuilderCommunityPreview() {
   const plans = [
-    { name: "The Aspen", beds: 3, sqft: "1,850", status: "2 homes available" },
-    { name: "The Birch", beds: 4, sqft: "2,320", status: "Now selling" },
+    { name: "Plan A · Sample", beds: 3, sqft: "1,850", status: "2 homes available" },
+    { name: "Plan B · Sample", beds: 4, sqft: "2,320", status: "Now selling" },
+    { name: "Plan C · Sample", beds: 4, sqft: "2,640", status: "Coming soon" },
   ];
   return (
     <BrowserFrame url="www.yourbuilder.com/communities/…">
       <div className="p-5">
-        <div className="flex h-24 items-end rounded-xl bg-gradient-to-br from-emerald-300 to-emerald-600 p-3" aria-hidden>
+        <div className="flex h-28 items-end rounded-xl bg-gradient-to-br from-emerald-300 to-emerald-600 p-3" aria-hidden>
           <span className="text-sm font-bold text-white">Sample Community · Frankfort</span>
         </div>
         <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Floor plans</p>
@@ -209,61 +246,58 @@ function BuilderCommunityPreview() {
   );
 }
 
-export function ProductShowcase() {
-  const items: { title: string; body: string; status: PreviewStatus; icon: React.ReactNode; preview: React.ReactNode }[] = [
-    {
-      title: "Listing pages that turn browsers into showings",
-      body: "Photo gallery, price, beds, baths and square footage, the listing agent, and a showing-request form on every listing.",
-      status: "live",
-      icon: <CalendarCheck className="h-5 w-5" />,
-      preview: <PropertyDetailPreview />,
-    },
-    {
-      title: "Brokerage rosters with agent-linked listings",
-      body: "Every agent gets a profile. Every listing is tied to its listing agent, so a showing request reaches the right person.",
-      status: "partial",
-      icon: <Users className="h-5 w-5" />,
-      preview: <BrokerageRosterPreview />,
-    },
-    {
-      title: "Community showcases for builders",
-      body: "Communities, floor plans, available homes and tour requests, organized the way new-construction buyers shop.",
-      status: "concept",
-      icon: <Building2 className="h-5 w-5" />,
-      preview: <BuilderCommunityPreview />,
-    },
+// Mirrors the "Featured Local Agents" cards in app/real-estate/page.tsx,
+// with one card shown in its featured-upgrade state (a concept: no real
+// estate business has featured placement configured today).
+export function MarketplacePreview() {
+  const cards = [
+    { initials: "YB", name: "Your Business", area: "Homewood", featured: true },
+    { initials: "LA", name: "Local Agent", area: "Flossmoor", featured: false },
+    { initials: "LB", name: "Local Brokerage", area: "Orland Park", featured: false },
   ];
-
   return (
-    <div className="grid gap-10 lg:grid-cols-3">
-      {items.map((item) => (
-        <div key={item.title} className="flex flex-col">
-          <div className="mb-5 lg:min-h-[14rem]">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl text-white" style={{ backgroundColor: PRIMARY }}>
-              {item.icon}
-            </div>
-            <h3 className="mt-4 text-lg font-bold text-slate-900">{item.title}</h3>
-            <p className="mt-2 text-sm text-slate-600">{item.body}</p>
-            <div className="mt-3">
-              <StatusBadge status={item.status} />
-            </div>
-          </div>
-          {item.preview}
+    <BrowserFrame url="southsuburbsbest.com/real-estate">
+      <div className="p-5">
+        <p className="text-center text-sm font-bold text-slate-900">Featured Local Agents</p>
+        <p className="text-center text-[11px] text-slate-500">Real, local real estate professionals serving the South Suburbs.</p>
+        <div className="mt-4 grid gap-2 sm:grid-cols-3">
+          {cards.map((c) => (
+            <article
+              key={c.name}
+              className={`overflow-hidden rounded-xl bg-white shadow ring-1 ${c.featured ? "ring-2 ring-amber-400" : "ring-slate-100"}`}
+            >
+              <div className="relative flex h-14 items-center justify-center text-lg font-bold text-white" style={{ backgroundColor: PRIMARY }}>
+                {c.initials}
+                {c.featured && (
+                  <span className="absolute right-1.5 top-1.5 inline-flex items-center gap-0.5 rounded-full bg-amber-400 px-1.5 py-0.5 text-[9px] font-bold text-slate-900">
+                    <Star className="h-2.5 w-2.5" /> Featured
+                  </span>
+                )}
+              </div>
+              <div className="p-3">
+                <p className="text-xs font-bold text-slate-900">{c.name}</p>
+                <p className="text-[10px] text-slate-500">Serving {c.area}</p>
+                <p className="mt-1.5 text-[10px] font-semibold" style={{ color: PRIMARY }}>View Profile →</p>
+              </div>
+            </article>
+          ))}
         </div>
-      ))}
-    </div>
+      </div>
+    </BrowserFrame>
   );
 }
 
-export function LiveDemoLink() {
+export function LiveDemoLink({ tone = "light" }: { tone?: "light" | "dark" }) {
   return (
     <Link
       href="/real-estate"
-      className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#1e3a5f] shadow ring-1 ring-slate-200 transition hover:bg-slate-50"
+      className={
+        tone === "light"
+          ? "inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#1e3a5f] shadow ring-1 ring-slate-200 transition hover:bg-slate-50"
+          : "inline-flex items-center gap-2 rounded-full bg-white/10 px-6 py-3 text-sm font-semibold text-white ring-1 ring-white/25 transition hover:bg-white/20"
+      }
     >
       <MapPin className="h-4 w-4" /> Explore the live SSB Real Estate Directory
     </Link>
   );
 }
-
-export { StatusBadge };
