@@ -203,3 +203,56 @@ export const SALES_CONTACT = {
   phoneHref: "tel:+17088474211",
   email: "leadsgrowrevenue@gmail.com",
 };
+
+// ---------------------------------------------------------------------
+// AI sales agent (SSB Prospector) - page-scoped widget configuration.
+//
+// The shared LGR Connect widget (loaded site-wide by app/layout.tsx)
+// reads window.LGR_CONNECT_CONFIG once, when its script runs. This page
+// sets it inline (see page.tsx) so that, on this page only, the widget
+// talks to SSB's already-provisioned `ssb-prospector` agent (gateway
+// commit b8cd9ba: client-policies SSB_PROD.agents.ssb-prospector,
+// Directus agent_instances id 122, tenant ssb_internal) and presents
+// sales quick actions. Every other SSB page keeps the default
+// Receptionist presentation. Only existing widget config keys are used
+// (assistantName, statusText, agentKey, tenantId, inputPlaceholder,
+// quickActions with channel "message"/"chat") - no shared widget change.
+// ---------------------------------------------------------------------
+export const PROSPECTOR_AGENT_KEY = "ssb-prospector";
+
+// Generic chat-bubble icon in SSB navy/amber for the widget avatar (SSB
+// has no square logo asset; the wide /logo.png is unreadable in the
+// widget's 58px circle). URI-encoded: widget.js inserts logoUrl into an
+// <img src="..."> attribute verbatim.
+const SALES_AGENT_ICON_SVG =
+  "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><circle cx='32' cy='32' r='32' fill='#1e3a5f'/>" +
+  "<path d='M18 22a6 6 0 0 1 6-6h16a6 6 0 0 1 6 6v12a6 6 0 0 1-6 6H30l-8 7v-7h0a6 6 0 0 1-4-6z' fill='#fbbf24'/>" +
+  "<circle cx='26' cy='28' r='2.5' fill='#1e3a5f'/><circle cx='32' cy='28' r='2.5' fill='#1e3a5f'/><circle cx='38' cy='28' r='2.5' fill='#1e3a5f'/></svg>";
+
+export const PROSPECTOR_WIDGET_CONFIG = {
+  agentKey: PROSPECTOR_AGENT_KEY,
+  logoUrl: "data:image/svg+xml;charset=utf-8," + encodeURIComponent(SALES_AGENT_ICON_SVG),
+  tenantId: "ssb_internal",
+  assistantName: "South Suburbs Best",
+  statusText: "AI Sales Agent • Online",
+  inputPlaceholder: "Ask about a branded directory...",
+  quickActions: [
+    { icon: "💬", label: "Ask a Question", channel: "chat" },
+    { icon: "🧭", label: "Which directory fits me?", channel: "message", sendText: "Which South Suburbs Best real estate directory fits my business?" },
+    { icon: "⚖️", label: "Compare directories", channel: "message", sendText: "Can you compare the Solo Agent, Brokerage and Builder / Developer directories?" },
+    { icon: "🏷️", label: "Pricing", channel: "message", sendText: "What does a branded real estate directory cost?" },
+    { icon: "📍", label: "Marketplace listing", channel: "message", sendText: "How does the South Suburbs Best Real Estate Marketplace listing work?" },
+    { icon: "🙋", label: "Talk to a Human", channel: "message", sendText: "I'd like to talk with a person." },
+  ],
+};
+
+// Conversation starters used by the page's "Ask our AI sales agent"
+// buttons. Each opens the agent and sends the visitor's question.
+export const PROSPECTOR_SEEDS: Record<DirectoryKey | "general", string> = {
+  general: "I'm interested in a branded real estate directory. Which one fits my business?",
+  "solo-agent": "I'm an independent agent and I'm interested in a Solo Agent Directory. How does it work and how do I get started?",
+  brokerage: "I run a brokerage and I'm interested in a Brokerage Directory for my agents. How does it work and how do I get started?",
+  builder: "I'm a home builder / developer and I'm interested in a Builder / Developer Directory for my communities. How does it work?",
+};
+
+export const PROSPECTOR_PRICING_SEED = (directoryName: string) => `What does the ${directoryName} cost, and what's included?`;

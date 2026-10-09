@@ -4,7 +4,13 @@ Mission: ZILLOW-BUSTER-SALES-LANDING-001
 Branch: `claude/tender-mendel-5pvk3u` (isolated; not merged, not deployed)
 Page: `frontend/app/zillow-buster/` → route `/zillow-buster` (the slug is a placeholder pending founder decision, see §7)
 
-## Refinement pass v4 (latest)
+## AI sales agent pass v5 (latest)
+
+Automated conversion is now the primary objective. Every primary CTA opens SSB's existing AI sales agent (`ssb-prospector`) through the site's existing widget. The configuration is page-scoped, phones get a docked widget, and the intake form is the fallback. Phone prominence is reduced to one line. Details, verification and everything still blocked: **`BLOCKED_INTEGRATIONS.md`**. Incident and automation analysis: **`INCIDENT_AND_SALES_AUTOMATION_REPORT.md`**.
+
+New files: `frontend/app/zillow-buster/AskSalesAgentButton.tsx`, `frontend/app/zillow-buster/SalesAgentMobileDock.tsx`. Changed: `page.tsx`, `content.ts`.
+
+## Refinement pass v4
 
 **Changed (sales page only)**
 - **CTAs:** every solid-amber button now obtains a branded directory: "Get my branded directory" (hero, form submit), "Get my Solo Agent / Brokerage / Builder / Developer Directory" (directory sections), and "Get this directory" (pricing cards). The marketplace banner was restyled as secondary so it no longer competes.

@@ -24,7 +24,7 @@ import {
   Inbox,
   Magnet,
   Palette,
-  PhoneCall,
+  MessageCircle,
   Rocket,
   ShieldCheck,
   Sparkles,
@@ -40,7 +40,9 @@ import {
   FEATURED_PLACEMENT,
   LAUNCH_OFFER,
   MARKETPLACE,
-  SALES_CONTACT,
+  PROSPECTOR_PRICING_SEED,
+  PROSPECTOR_SEEDS,
+  PROSPECTOR_WIDGET_CONFIG,
   type DirectoryKey,
   type DirectoryProduct,
 } from "./content";
@@ -54,6 +56,8 @@ import {
 } from "./ProductPreviews";
 import BreakEvenCalculator from "./BreakEvenCalculator";
 import DirectoryIntakeForm from "./DirectoryIntakeForm";
+import AskSalesAgentButton from "./AskSalesAgentButton";
+import SalesAgentMobileDock from "./SalesAgentMobileDock";
 
 export const metadata: Metadata = {
   title: "Branded Real Estate Directories | South Suburbs Best",
@@ -128,16 +132,18 @@ function intakeHref(key: DirectoryKey) {
   return `?directory=${key}#get-started`;
 }
 
-function PrimaryCta({ children, href = "#get-started" }: { children: React.ReactNode; href?: string }) {
-  return (
-    <Link
-      href={href}
-      className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-amber-400 px-7 py-3.5 text-base font-bold text-slate-900 shadow-lg shadow-amber-500/20 transition hover:bg-amber-300 sm:w-auto"
-    >
-      {children} <ArrowRight className="h-4 w-4" />
-    </Link>
-  );
-}
+const PRIMARY_BUTTON =
+  "inline-flex w-full items-center justify-center gap-2 rounded-full bg-amber-400 px-7 py-3.5 text-base font-bold text-slate-900 shadow-lg shadow-amber-500/20 transition hover:bg-amber-300 sm:w-auto";
+
+// Page-scoped AI sales agent config for the site-wide widget. Rendered
+// as an inline script in the server HTML so it runs before the widget's
+// afterInteractive script on a direct visit. On client-side navigation
+// from another SSB page the widget is already mounted with its default
+// (Receptionist) presentation; the "Ask" buttons still open it.
+// Never overwrites a config another script already set.
+const PROSPECTOR_CONFIG_SCRIPT = `window.LGR_CONNECT_CONFIG = window.LGR_CONNECT_CONFIG || ${JSON.stringify(
+  PROSPECTOR_WIDGET_CONFIG
+).replace(/</g, "\\u003c")};`;
 
 // No founder-approved price yet -> a customer-friendly "Request pricing".
 function PriceLine({ price, cadence }: { price: string | null; cadence?: string | null }) {
@@ -176,9 +182,17 @@ function DirectorySection({ directory, index }: { directory: DirectoryProduct; i
             ))}
           </dl>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-            <PrimaryCta href={intakeHref(directory.key)}>{directory.cta}</PrimaryCta>
+            <AskSalesAgentButton seed={PROSPECTOR_SEEDS[directory.key]} fallbackHref={intakeHref(directory.key)} className={PRIMARY_BUTTON}>
+              <MessageCircle className="h-4 w-4" /> {directory.cta}
+            </AskSalesAgentButton>
             <PriceLine price={directory.price} cadence={directory.cadence} />
           </div>
+          <p className="mt-3 text-sm text-slate-500">
+            Our AI sales agent answers your questions right away.{" "}
+            <Link href={intakeHref(directory.key)} className="font-semibold text-[#1e3a5f] hover:underline">
+              Prefer a form?
+            </Link>
+          </p>
         </div>
         <div className={`min-w-0 ${flipped ? "lg:order-1" : ""}`}>{DIRECTORY_PREVIEWS[directory.key]}</div>
       </div>
@@ -191,6 +205,8 @@ export default function RealEstateDirectorySalesPage() {
 
   return (
     <main className="min-h-screen bg-white">
+      <script dangerouslySetInnerHTML={{ __html: PROSPECTOR_CONFIG_SCRIPT }} />
+      <SalesAgentMobileDock />
       {/* Receptionist pageContext, reusing widget.js's existing
           data-page-* mechanism (same as real-estate/property/[id]). */}
       <div
@@ -217,7 +233,9 @@ export default function RealEstateDirectorySalesPage() {
               Suburbs Best Real Estate Marketplace.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <PrimaryCta>Get my branded directory</PrimaryCta>
+              <AskSalesAgentButton seed={PROSPECTOR_SEEDS.general} fallbackHref="#get-started" className={PRIMARY_BUTTON}>
+                <MessageCircle className="h-4 w-4" /> Ask our AI sales agent
+              </AskSalesAgentButton>
               <Link
                 href="#directories"
                 className="inline-flex items-center justify-center rounded-full bg-white/10 px-7 py-3.5 text-base font-semibold text-white ring-1 ring-white/25 transition hover:bg-white/20"
@@ -226,10 +244,7 @@ export default function RealEstateDirectorySalesPage() {
               </Link>
             </div>
             <p className="mt-4 text-sm text-white/70">
-              Questions?{" "}
-              <a href={SALES_CONTACT.phoneHref} className="whitespace-nowrap font-semibold text-amber-300 hover:underline">
-                Call {SALES_CONTACT.phone}
-              </a>
+              Instant answers, any time: which directory fits, what&apos;s included and how to get started.
             </p>
             <div className="mt-8">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">I&apos;m a…</p>
@@ -587,11 +602,15 @@ export default function RealEstateDirectorySalesPage() {
                     </li>
                   ))}
                 </ul>
-                <Link
-                  href={intakeHref(d.key)}
-                  className="mt-5 inline-flex items-center justify-center rounded-full bg-[#1e3a5f] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#16304d]"
+                <AskSalesAgentButton
+                  seed={PROSPECTOR_PRICING_SEED(d.name)}
+                  fallbackHref={intakeHref(d.key)}
+                  className="mt-5 inline-flex items-center justify-center gap-2 rounded-full bg-[#1e3a5f] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#16304d]"
                 >
-                  Get this directory
+                  <MessageCircle className="h-4 w-4" /> Get pricing for this directory
+                </AskSalesAgentButton>
+                <Link href={intakeHref(d.key)} className="mt-2 text-center text-xs font-semibold text-slate-500 hover:text-[#1e3a5f]">
+                  or request it with the form
                 </Link>
               </div>
             ))}
@@ -633,27 +652,39 @@ export default function RealEstateDirectorySalesPage() {
             <p className="text-xs font-semibold uppercase tracking-[0.3em] text-amber-300">Get started</p>
             <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">Stop renting your online presence. Start owning it.</h2>
             <p className="mt-4 text-white/80">
-              Tell us about your business and which directory fits. We&apos;ll walk you through your directory, share pricing,
-              and map out your launch.
+              Start with our AI sales agent: get instant answers about each directory, compare your options and find the right
+              fit. When you&apos;re ready, request your directory with the form.
             </p>
+            <div className="mt-8 rounded-2xl bg-white/5 p-5 ring-1 ring-white/10">
+              <p className="text-sm font-semibold">Ask our AI sales agent</p>
+              <div className="mt-3 flex flex-col gap-2">
+                {[
+                  { label: "Which directory fits my business?", seed: PROSPECTOR_SEEDS.general },
+                  { label: "How does the marketplace listing work?", seed: "How does the South Suburbs Best Real Estate Marketplace listing work?" },
+                  { label: "Can I use my own domain?", seed: "Can my directory use a domain I own, and how does that work?" },
+                ].map((q) => (
+                  <AskSalesAgentButton
+                    key={q.label}
+                    seed={q.seed}
+                    fallbackHref="#get-started"
+                    className="flex items-center gap-2 rounded-xl bg-white/5 px-4 py-3 text-left text-sm font-semibold text-white ring-1 ring-white/15 transition hover:bg-white/10"
+                  >
+                    <MessageCircle className="h-4 w-4 shrink-0 text-amber-300" /> {q.label}
+                  </AskSalesAgentButton>
+                ))}
+              </div>
+            </div>
             <ul className="mt-8 space-y-3 text-sm text-white/85">
               {[
-                "A walkthrough built around your business",
                 "Pricing for the directory you choose",
                 "A launch plan for your domain and listings",
-                "No payment required to request a walkthrough",
+                "No payment required to get started",
               ].map((t) => (
                 <li key={t} className="flex items-center gap-3">
                   <CheckCircle2 className="h-5 w-5 shrink-0 text-amber-300" /> {t}
                 </li>
               ))}
             </ul>
-            <div className="mt-10 rounded-2xl bg-white/5 p-5 ring-1 ring-white/10">
-              <p className="text-sm font-semibold">Prefer to talk now?</p>
-              <a href={SALES_CONTACT.phoneHref} className="mt-2 inline-flex items-center gap-2 text-lg font-bold text-amber-300">
-                <PhoneCall className="h-5 w-5" /> {SALES_CONTACT.phone}
-              </a>
-            </div>
             <div className="mt-6">
               <LiveDemoLink tone="dark" />
             </div>
