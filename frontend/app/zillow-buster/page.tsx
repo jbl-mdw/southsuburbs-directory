@@ -76,8 +76,17 @@ const DIRECTORY_PREVIEWS: Record<DirectoryKey, React.ReactNode> = {
 const TRUST_POINTS = [
   { icon: <ShieldCheck className="h-5 w-5" />, text: "From the team behind the South Suburbs Best Real Estate Directory" },
   { icon: <Inbox className="h-5 w-5" />, text: "Showing requests on every listing" },
-  { icon: <Globe className="h-5 w-5" />, text: "Your domain, your brand" },
+  { icon: <Globe className="h-5 w-5" />, text: "Your brand on a domain you own" },
   { icon: <Store className="h-5 w-5" />, text: "Marketplace listing included" },
+];
+
+const DIRECTORY_VS_MARKETPLACE = [
+  { label: "Brand buyers see", directory: "Yours: your name, logo and colors", marketplace: "South Suburbs Best" },
+  { label: "Web address", directory: "A domain you own", marketplace: "southsuburbsbest.com" },
+  { label: "What's on it", directory: "Only your listings, agents or communities", marketplace: "Local real estate professionals and properties, including yours" },
+  { label: "What it does for you", directory: "Converts buyers who look you up by name", marketplace: "Helps local buyers discover you" },
+  { label: "Showing requests on your listings", directory: "Go to you or the listing agent", marketplace: "Go to the listing agent" },
+  { label: "Cost", directory: "Your directory subscription", marketplace: "Normal-rotation listing included; featured placement optional" },
 ];
 
 const WITHOUT = [
@@ -107,7 +116,7 @@ const STEPS = [
 
 function SectionHeading({ eyebrow, title, body, light = false }: { eyebrow: string; title: string; body?: string; light?: boolean }) {
   return (
-    <div className="mx-auto mb-12 max-w-3xl text-center">
+    <div className="mx-auto mb-10 max-w-3xl text-center sm:mb-12">
       <p className={`text-xs font-semibold uppercase tracking-[0.3em] ${light ? "text-amber-300" : "text-amber-600"}`}>{eyebrow}</p>
       <h2 className={`mt-3 text-3xl font-bold tracking-tight sm:text-4xl ${light ? "text-white" : "text-slate-900"}`}>{title}</h2>
       {body && <p className={`mt-4 text-base ${light ? "text-white/75" : "text-slate-600"}`}>{body}</p>}
@@ -123,7 +132,7 @@ function PrimaryCta({ children, href = "#get-started" }: { children: React.React
   return (
     <Link
       href={href}
-      className="inline-flex items-center justify-center gap-2 rounded-full bg-amber-400 px-7 py-3.5 text-base font-bold text-slate-900 shadow-lg shadow-amber-500/20 transition hover:bg-amber-300"
+      className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-amber-400 px-7 py-3.5 text-base font-bold text-slate-900 shadow-lg shadow-amber-500/20 transition hover:bg-amber-300 sm:w-auto"
     >
       {children} <ArrowRight className="h-4 w-4" />
     </Link>
@@ -144,7 +153,7 @@ function PriceLine({ price, cadence }: { price: string | null; cadence?: string 
 function DirectorySection({ directory, index }: { directory: DirectoryProduct; index: number }) {
   const flipped = index % 2 === 1;
   return (
-    <section id={directory.key} className={`scroll-mt-24 py-20 ${flipped ? "bg-slate-50" : "bg-white"}`}>
+    <section id={directory.key} className={`scroll-mt-24 py-14 sm:py-20 ${flipped ? "bg-slate-50" : "bg-white"}`}>
       <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 lg:grid-cols-2">
         <div className={`min-w-0 ${flipped ? "lg:order-2" : ""}`}>
           <div className="flex items-center gap-3">
@@ -196,19 +205,19 @@ export default function RealEstateDirectorySalesPage() {
         <div className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-amber-400/10 blur-3xl" aria-hidden />
         <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-4 py-16 sm:py-20 lg:grid-cols-2 lg:py-24">
           <div className="min-w-0">
-            <p className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-amber-300 ring-1 ring-white/15">
+            <p className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-amber-300 ring-1 ring-white/15 sm:text-xs sm:tracking-[0.2em]">
               <Sparkles className="h-3.5 w-3.5" /> South Suburbs Best · Real Estate Directories
             </p>
             <h1 className="mt-5 text-4xl font-bold leading-tight tracking-tight sm:text-5xl">
               Your listings. Your brand. <span className="text-amber-300">Your leads.</span>
             </h1>
             <p className="mt-5 max-w-xl text-lg text-white/80">
-              Keep the portals for reach. South Suburbs Best gives agents, brokerages and home builders their own branded
-              property directory, on their own domain, where showing requests go straight to them. Every directory includes a
-              listing in the South Suburbs Best Real Estate Marketplace.
+              Keep the portals for reach. Get your own independently branded property directory on a domain you own, where
+              showing requests and questions come straight to you. Every directory also includes a listing in the South
+              Suburbs Best Real Estate Marketplace.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <PrimaryCta>Get my directory</PrimaryCta>
+              <PrimaryCta>Get my branded directory</PrimaryCta>
               <Link
                 href="#directories"
                 className="inline-flex items-center justify-center rounded-full bg-white/10 px-7 py-3.5 text-base font-semibold text-white ring-1 ring-white/25 transition hover:bg-white/20"
@@ -216,6 +225,12 @@ export default function RealEstateDirectorySalesPage() {
                 Compare directories
               </Link>
             </div>
+            <p className="mt-4 text-sm text-white/70">
+              Questions?{" "}
+              <a href={SALES_CONTACT.phoneHref} className="whitespace-nowrap font-semibold text-amber-300 hover:underline">
+                Call {SALES_CONTACT.phone}
+              </a>
+            </p>
             <div className="mt-8">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/50">I&apos;m a…</p>
               <div className="mt-2 flex flex-wrap gap-2">
@@ -223,7 +238,7 @@ export default function RealEstateDirectorySalesPage() {
                   <Link
                     key={d.key}
                     href={`#${d.key}`}
-                    className="inline-flex items-center gap-1.5 rounded-full bg-white/5 px-3.5 py-1.5 text-sm font-semibold text-white/90 ring-1 ring-white/15 transition hover:bg-white/15"
+                    className="inline-flex items-center gap-1.5 rounded-full bg-white/5 px-4 py-2.5 text-sm font-semibold text-white/90 ring-1 ring-white/15 transition hover:bg-white/15 sm:px-3.5 sm:py-1.5"
                   >
                     {d.shortName}
                     <ArrowDown className="h-3.5 w-3.5 text-amber-300" />
@@ -252,7 +267,7 @@ export default function RealEstateDirectorySalesPage() {
       </section>
 
       {/* ============ PROBLEM → SOLUTION ============ */}
-      <section className="bg-slate-50 py-20">
+      <section className="bg-slate-50 py-14 sm:py-20">
         <div className="mx-auto max-w-6xl px-4">
           <SectionHeading
             eyebrow="The problem"
@@ -289,7 +304,7 @@ export default function RealEstateDirectorySalesPage() {
       </section>
 
       {/* ============ REACH vs CAPTURE ============ */}
-      <section className="py-20">
+      <section className="py-14 sm:py-20">
         <div className="mx-auto max-w-5xl px-4">
           <SectionHeading
             eyebrow="Keep the portals. Add your own."
@@ -325,13 +340,13 @@ export default function RealEstateDirectorySalesPage() {
       </section>
 
       {/* ============ CHOOSE YOUR DIRECTORY ============ */}
-      <section id="directories" className="scroll-mt-24 bg-[#0f2238] py-20 text-white">
+      <section id="directories" className="scroll-mt-24 bg-[#0f2238] py-14 sm:py-20 text-white">
         <div className="mx-auto max-w-6xl px-4">
           <SectionHeading
             light
             eyebrow="Choose your directory"
             title="Three directories. One regional marketplace."
-            body="Pick the branded directory built for your kind of real estate business. Every one includes a listing in the South Suburbs Best Real Estate Marketplace."
+            body="Pick the independently branded directory built for your kind of real estate business. Every one includes a normal-rotation listing in the South Suburbs Best Real Estate Marketplace."
           />
           <div className="grid gap-5 md:grid-cols-3">
             {DIRECTORIES.map((d) => (
@@ -352,13 +367,13 @@ export default function RealEstateDirectorySalesPage() {
           </div>
           <Link
             href="#marketplace"
-            className="mt-5 flex flex-col items-start gap-3 rounded-2xl bg-amber-400 p-5 text-slate-900 transition hover:bg-amber-300 sm:flex-row sm:items-center"
+            className="mt-5 flex flex-col items-start gap-3 rounded-2xl bg-white/5 p-5 text-white ring-1 ring-amber-300/50 transition hover:bg-white/10 sm:flex-row sm:items-center"
           >
-            <Store className="h-6 w-6 shrink-0" />
+            <Store className="h-6 w-6 shrink-0 text-amber-300" />
             <span className="flex-1 text-sm font-semibold">
-              Included with every directory: a listing in the South Suburbs Best Real Estate Marketplace.
+              Included with every directory: a normal-rotation listing in the South Suburbs Best Real Estate Marketplace.
             </span>
-            <span className="inline-flex items-center gap-1.5 text-sm font-bold">
+            <span className="inline-flex items-center gap-1.5 text-sm font-bold text-amber-300">
               How it works <ArrowDown className="h-4 w-4" />
             </span>
           </Link>
@@ -371,7 +386,7 @@ export default function RealEstateDirectorySalesPage() {
       ))}
 
       {/* ============ SOUTH SUBURBS BEST MARKETPLACE (included benefit) ============ */}
-      <section id="marketplace" className="scroll-mt-24 bg-white py-20">
+      <section id="marketplace" className="scroll-mt-24 bg-white py-14 sm:py-20">
         <div className="mx-auto max-w-6xl px-4">
           <SectionHeading
             eyebrow="Included with every directory"
@@ -429,23 +444,48 @@ export default function RealEstateDirectorySalesPage() {
             </div>
           </div>
 
+          {/* Your directory vs. the marketplace */}
+          <div className="mt-14">
+            <h3 className="text-center text-2xl font-bold text-slate-900">Your directory and the marketplace, side by side</h3>
+            <p className="mx-auto mt-2 max-w-2xl text-center text-sm text-slate-600">
+              Your directory is yours: your brand, on your domain. The marketplace belongs to South Suburbs Best and adds regional
+              exposure on top.
+            </p>
+            <div className="mt-8 overflow-hidden rounded-2xl ring-1 ring-slate-200">
+              <div className="hidden bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500 sm:grid sm:grid-cols-[1fr_1.2fr_1.2fr]">
+                <div className="px-5 py-3" />
+                <div className="bg-[#1e3a5f] px-5 py-3 text-white">Your branded directory</div>
+                <div className="px-5 py-3">South Suburbs Best Marketplace</div>
+              </div>
+              {DIRECTORY_VS_MARKETPLACE.map((row) => (
+                <div key={row.label} className="grid grid-cols-2 border-t border-slate-100 text-sm first:border-t-0 sm:grid-cols-[1fr_1.2fr_1.2fr] sm:first:border-t">
+                  <div className="col-span-2 bg-slate-50 px-4 pb-1 pt-3 text-xs font-semibold uppercase tracking-wide text-slate-500 sm:col-span-1 sm:bg-white sm:px-5 sm:py-4 sm:text-sm sm:normal-case sm:tracking-normal sm:text-slate-800">
+                    {row.label}
+                  </div>
+                  <div className="bg-[#1e3a5f]/5 px-4 py-3 font-semibold text-[#1e3a5f] sm:px-5 sm:py-4">
+                    <span className="mb-0.5 block text-[10px] font-semibold uppercase tracking-wide text-slate-400 sm:hidden">Your directory</span>
+                    {row.directory}
+                  </div>
+                  <div className="px-4 py-3 text-slate-600 sm:px-5 sm:py-4">
+                    <span className="mb-0.5 block text-[10px] font-semibold uppercase tracking-wide text-slate-400 sm:hidden">Marketplace</span>
+                    {row.marketplace}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* Included vs. optional upgrade */}
-          <div className="mt-14 grid gap-6 lg:grid-cols-3">
+          <div className="mt-14 grid gap-6 lg:grid-cols-2">
             <div className="rounded-2xl bg-slate-50 p-6 ring-1 ring-slate-200">
               <p className="text-xs font-semibold uppercase tracking-wide text-emerald-600">Included</p>
-              <h3 className="mt-2 text-lg font-bold text-slate-900">Normal-rotation listing</h3>
+              <h3 className="mt-2 text-lg font-bold text-slate-900">Normal-rotation marketplace listing</h3>
               <p className="mt-2 text-sm text-slate-600">
-                Every Solo Agent, Brokerage and Builder / Developer subscription includes a listing in the marketplace, shown in
-                normal rotation alongside other local real estate professionals.
+                Every Solo Agent, Brokerage and Builder / Developer subscription includes a listing in the South Suburbs Best Real
+                Estate Marketplace, shown in normal rotation alongside other local real estate professionals. South Suburbs Best
+                owns and operates the marketplace, so there&apos;s no second site for you to build or maintain.
               </p>
-            </div>
-            <div className="rounded-2xl bg-slate-50 p-6 ring-1 ring-slate-200">
-              <p className="text-xs font-semibold uppercase tracking-wide text-[#1e3a5f]">Run by South Suburbs Best</p>
-              <h3 className="mt-2 text-lg font-bold text-slate-900">Regional visibility, no extra work</h3>
-              <p className="mt-2 text-sm text-slate-600">
-                South Suburbs Best owns and operates the marketplace, so you gain a regional presence without building or
-                maintaining a second site.
-              </p>
+              <p className="mt-3 text-sm font-semibold text-emerald-700">Included in every directory subscription</p>
             </div>
             <div className="rounded-2xl bg-gradient-to-br from-amber-50 to-amber-100 p-6 ring-2 ring-amber-300">
               <p className="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wide text-amber-700">
@@ -474,7 +514,7 @@ export default function RealEstateDirectorySalesPage() {
       </section>
 
       {/* ============ ROI ============ */}
-      <section className="bg-slate-50 py-20">
+      <section className="bg-slate-50 py-14 sm:py-20">
         <div className="mx-auto max-w-5xl px-4">
           <SectionHeading
             eyebrow="Do the math"
@@ -486,7 +526,7 @@ export default function RealEstateDirectorySalesPage() {
       </section>
 
       {/* ============ HOW IT WORKS ============ */}
-      <section className="bg-[#0f2238] py-20 text-white">
+      <section className="bg-[#0f2238] py-14 sm:py-20 text-white">
         <div className="mx-auto max-w-6xl px-4">
           <SectionHeading
             light
@@ -513,7 +553,7 @@ export default function RealEstateDirectorySalesPage() {
       </section>
 
       {/* ============ PRICING ============ */}
-      <section id="pricing" className="scroll-mt-24 bg-slate-50 py-20">
+      <section id="pricing" className="scroll-mt-24 bg-slate-50 py-14 sm:py-20">
         <div className="mx-auto max-w-6xl px-4">
           <SectionHeading
             eyebrow="Pricing"
@@ -540,7 +580,7 @@ export default function RealEstateDirectorySalesPage() {
                   <PriceLine price={d.price} cadence={d.cadence} />
                 </div>
                 {d.introOffer && <p className="mt-2 rounded-lg bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-800">{d.introOffer}</p>}
-                <ul className="mt-4 flex-1 space-y-2 text-xs text-slate-600">
+                <ul className="mt-4 flex-1 space-y-2 text-sm text-slate-600 sm:text-xs">
                   {d.includes.map((i) => (
                     <li key={i} className="flex items-start gap-2">
                       <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-500" /> {i}
@@ -551,7 +591,7 @@ export default function RealEstateDirectorySalesPage() {
                   href={intakeHref(d.key)}
                   className="mt-5 inline-flex items-center justify-center rounded-full bg-[#1e3a5f] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#16304d]"
                 >
-                  {d.price ? "Get started" : "Get pricing"}
+                  Get this directory
                 </Link>
               </div>
             ))}
@@ -567,7 +607,7 @@ export default function RealEstateDirectorySalesPage() {
       </section>
 
       {/* ============ FAQ ============ */}
-      <section className="py-20">
+      <section className="py-14 sm:py-20">
         <div className="mx-auto max-w-3xl px-4">
           <SectionHeading eyebrow="Questions" title="Frequently asked questions" />
           <div className="space-y-3">
@@ -587,7 +627,7 @@ export default function RealEstateDirectorySalesPage() {
       </section>
 
       {/* ============ FINAL CONVERSION ============ */}
-      <section id="get-started" className="scroll-mt-24 bg-gradient-to-br from-[#0f2238] via-[#1e3a5f] to-[#0f2238] py-20 text-white">
+      <section id="get-started" className="scroll-mt-24 bg-gradient-to-br from-[#0f2238] via-[#1e3a5f] to-[#0f2238] py-14 sm:py-20 text-white">
         <div className="mx-auto grid max-w-6xl gap-12 px-4 lg:grid-cols-2">
           <div className="min-w-0">
             <p className="text-xs font-semibold uppercase tracking-[0.3em] text-amber-300">Get started</p>

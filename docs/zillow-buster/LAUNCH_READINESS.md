@@ -4,6 +4,28 @@ Mission: ZILLOW-BUSTER-SALES-LANDING-001
 Branch: `claude/tender-mendel-5pvk3u` (isolated; not merged, not deployed)
 Page: `frontend/app/zillow-buster/` → route `/zillow-buster` (the slug is a placeholder pending founder decision, see §7)
 
+## Refinement pass v4 (latest)
+
+**Changed (sales page only)**
+- **CTAs:** every solid-amber button now obtains a branded directory: "Get my branded directory" (hero, form submit), "Get my Solo Agent / Brokerage / Builder / Developer Directory" (directory sections), and "Get this directory" (pricing cards). The marketplace banner was restyled as secondary so it no longer competes.
+- **Clarity:** a new "Your directory and the marketplace, side by side" comparison covers brand, web address, what's on it, what it does, where showing requests go, and cost. The hero, chooser and included-listing card now say "independently branded", "a domain you own" and "normal-rotation listing" explicitly. The FAQ answers on domain ownership, branding and lead capture were tightened. The redundant "Run by South Suburbs Best" card was folded into the included-listing card.
+- **Phone:** (708) 847-4211 appears in the hero, the contact card, under the form submit button and in the email-fallback screen. It never wraps.
+- **Mobile:** section padding is 56px on phones (80px on larger screens). Primary buttons are full-width on phones. Hero chips and the add-on chip are at least 40px tall. Pricing feature lists use 14px text on phones. The hero eyebrow has tighter tracking.
+- **Form:** visible labels on every field (not placeholder-only), required markers, autocomplete hints (name, organization, email, tel), 16px inputs that are 48px tall on phones (so iOS doesn't zoom on focus), and a ✓/+ state on the add-on chip. The submit button reads "Get my branded directory", with "No payment now. We'll follow up with pricing and next steps." The integration is unchanged: still gated, and email fallback only.
+- **Removed:** one FAQ sentence ("not shared with other agents") that couldn't be verified.
+
+**Validation (v4):** typecheck clean; production build compiles. The rendered page body, FAQ answers included, contains no Zillow Buster, LGR, SSB abbreviation, old contact details, status labels or AI Employee promotions. Desktop 1440px and mobile 390px: 0 overflow in page content. Mobile: smallest input text 16px, smallest field 48px, no tap target under 40px. Directory CTAs preselect the form; `?directory=marketplace` falls back to Solo Agent; calculator correct; email fallback subject and body correct; **0 POST requests**.
+
+**Open founder decisions (unchanged by this pass)**
+1. **Footer credit:** the shared site footer reads "Powered by Leads Grow Revenue • AI Automation & Local Marketing", not the requested "Powered by Leads Grow Revenue." It's a shared component on every SSB page, so it's outside this sales-page scope.
+2. **The email fallback** opens the prospect's mail app addressed to leadsgrowrevenue@gmail.com, which is visible to them at that point. An SSB sales inbox is needed.
+3. **The URL** `/zillow-buster` is customer-visible.
+4. **Prices** for the 3 directories and featured placement (all "Request pricing").
+5. **The live-intake workflow key, checkout and onboarding** (see §0 table).
+6. **Featured placement is not configured** for real estate listings yet.
+7. **Builder / Developer** is purchasable via the form, but the product is not built. The copy says it is scoped with the builder first.
+8. **Ownership FAQ** wording needs legal confirmation.
+
 ## 0. Founder refinement v3 (current state, supersedes earlier sections where they conflict)
 
 **Brand and scope changes**

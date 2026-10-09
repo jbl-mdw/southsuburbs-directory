@@ -154,14 +154,16 @@ export default function DirectoryIntakeForm() {
     );
   }
 
+  // 16px text on phones so iOS doesn't zoom the page when a field is focused.
   const inputClass =
-    "w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/30";
+    "w-full rounded-lg border border-slate-300 bg-white px-3 py-3 text-base text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/30 sm:py-2.5 sm:text-sm";
+  const labelClass = "mb-1 block text-xs font-semibold text-slate-600";
 
   return (
     <form onSubmit={onSubmit} className="rounded-2xl bg-white p-6 text-slate-800 shadow-2xl sm:p-8">
       <fieldset>
         <legend className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
-          Which directory are you interested in?
+          Which directory do you want?
         </legend>
         <div className="grid gap-2 sm:grid-cols-3">
           {DIRECTORIES.map((c) => (
@@ -187,28 +189,49 @@ export default function DirectoryIntakeForm() {
         </div>
       </fieldset>
 
-      <div className="mt-5 grid gap-3 sm:grid-cols-2">
-        <input required value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" aria-label="Your name" className={inputClass} />
-        <input value={company} onChange={(e) => setCompany(e.target.value)} placeholder="Business or brokerage name" aria-label="Business or brokerage name" className={inputClass} />
-        <input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" aria-label="Email" className={inputClass} />
-        <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Phone" aria-label="Phone" className={inputClass} />
-        <input value={serviceArea} onChange={(e) => setServiceArea(e.target.value)} placeholder="Cities or areas you serve" aria-label="Cities or areas you serve" className={inputClass} />
-        <select value={domainStatus} onChange={(e) => setDomainStatus(e.target.value)} aria-label="Domain" className={inputClass}>
-          <option value="">Do you have a domain?</option>
-          <option value="I already own a domain">I already own a domain</option>
-          <option value="I need help choosing a domain">I need help choosing one</option>
-          <option value="Not sure yet">Not sure yet</option>
-        </select>
+      <div className="mt-5 grid gap-4 sm:grid-cols-2 sm:gap-3">
+        <label className="block">
+          <span className={labelClass}>Your name *</span>
+          <input required name="name" autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} className={inputClass} />
+        </label>
+        <label className="block">
+          <span className={labelClass}>Business or brokerage</span>
+          <input name="organization" autoComplete="organization" value={company} onChange={(e) => setCompany(e.target.value)} className={inputClass} />
+        </label>
+        <label className="block">
+          <span className={labelClass}>Email *</span>
+          <input required type="email" name="email" autoComplete="email" inputMode="email" value={email} onChange={(e) => setEmail(e.target.value)} className={inputClass} />
+        </label>
+        <label className="block">
+          <span className={labelClass}>Phone</span>
+          <input type="tel" name="tel" autoComplete="tel" inputMode="tel" value={phone} onChange={(e) => setPhone(e.target.value)} className={inputClass} />
+        </label>
+        <label className="block">
+          <span className={labelClass}>Cities or areas you serve</span>
+          <input name="service-area" placeholder="e.g. Homewood, Flossmoor" value={serviceArea} onChange={(e) => setServiceArea(e.target.value)} className={inputClass} />
+        </label>
+        <label className="block">
+          <span className={labelClass}>Do you have a domain?</span>
+          <select name="domain" value={domainStatus} onChange={(e) => setDomainStatus(e.target.value)} className={inputClass}>
+            <option value="">Choose one</option>
+            <option value="I already own a domain">I already own a domain</option>
+            <option value="I need help choosing a domain">I need help choosing one</option>
+            <option value="Not sure yet">Not sure yet</option>
+          </select>
+        </label>
         {teamSizeLabel && (
-          <input
-            type="number"
-            min="1"
-            value={teamSize}
-            onChange={(e) => setTeamSize(e.target.value)}
-            placeholder={teamSizeLabel}
-            aria-label={teamSizeLabel}
-            className={`${inputClass} sm:col-span-2`}
-          />
+          <label className="block sm:col-span-2">
+            <span className={labelClass}>{teamSizeLabel}</span>
+            <input
+              type="number"
+              min="1"
+              inputMode="numeric"
+              name="team-size"
+              value={teamSize}
+              onChange={(e) => setTeamSize(e.target.value)}
+              className={inputClass}
+            />
+          </label>
         )}
       </div>
 
@@ -223,40 +246,42 @@ export default function DirectoryIntakeForm() {
               type="button"
               onClick={() => toggleAddOn(addOn)}
               aria-pressed={addOns.includes(addOn)}
-              className={`rounded-full px-3.5 py-1.5 text-xs font-semibold ring-1 transition ${
+              className={`rounded-full px-4 py-2.5 text-sm font-semibold ring-1 transition sm:px-3.5 sm:py-1.5 sm:text-xs ${
                 addOns.includes(addOn)
                   ? "bg-amber-100 text-amber-900 ring-amber-300"
                   : "bg-white text-slate-600 ring-slate-200 hover:ring-slate-300"
               }`}
             >
+              {addOns.includes(addOn) ? "✓ " : "+ "}
               {addOn}
             </button>
           ))}
         </div>
       </fieldset>
 
-      <textarea
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        placeholder="Anything we should know? (optional)"
-        aria-label="Notes"
-        rows={3}
-        className={`${inputClass} mt-5`}
-      />
+      <label className="mt-5 block">
+        <span className={labelClass}>Anything we should know? (optional)</span>
+        <textarea name="notes" value={message} onChange={(e) => setMessage(e.target.value)} rows={3} className={inputClass} />
+      </label>
 
       <button
         type="submit"
         disabled={status === "sending"}
         className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-amber-400 px-7 py-3.5 text-base font-bold text-slate-900 shadow-lg transition hover:bg-amber-300 disabled:opacity-60"
       >
-        {status === "sending" ? "Sending..." : "Request my directory walkthrough"}
+        {status === "sending" ? "Sending..." : "Get my branded directory"}
       </button>
       {status === "error" && (
         <p className="mt-3 text-sm text-red-600">
           Something went wrong. Please call {SALES_CONTACT.phone}.
         </p>
       )}
-      <p className="mt-3 text-center text-xs text-slate-400">No payment required. We&apos;ll confirm fit before anything is built.</p>
+      <p className="mt-3 text-center text-xs text-slate-500">
+        No payment now. We&apos;ll follow up with pricing and next steps. Prefer to talk?{" "}
+        <a href={SALES_CONTACT.phoneHref} className="whitespace-nowrap font-semibold text-[#1e3a5f] hover:underline">
+          {SALES_CONTACT.phone}
+        </a>
+      </p>
     </form>
   );
 }

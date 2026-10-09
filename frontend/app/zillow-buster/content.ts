@@ -56,7 +56,7 @@ export const DIRECTORIES: DirectoryProduct[] = [
       "Agent profile and service-area pages",
       "South Suburbs Best Marketplace listing in normal rotation",
     ],
-    cta: "Build my agent directory",
+    cta: "Get my Solo Agent Directory",
     price: null,
     cadence: null,
     introOffer: null,
@@ -83,7 +83,7 @@ export const DIRECTORIES: DirectoryProduct[] = [
       "Showing and consultation requests routed per listing",
       "South Suburbs Best Marketplace listing in normal rotation",
     ],
-    cta: "Build my brokerage directory",
+    cta: "Get my Brokerage Directory",
     price: null,
     cadence: null,
     introOffer: null,
@@ -112,7 +112,7 @@ export const DIRECTORIES: DirectoryProduct[] = [
       "Tour and availability requests",
       "South Suburbs Best Marketplace listing in normal rotation",
     ],
-    cta: "Book a builder walkthrough",
+    cta: "Get my Builder / Developer Directory",
     price: null,
     cadence: null,
     introOffer: null,
@@ -150,11 +150,11 @@ export const FAQ: { q: string; a: string }[] = [
   },
   {
     q: "Can I use my own domain?",
-    a: "Yes. Your directory is designed to run on a domain you own. You choose and register the domain; we connect it during setup.",
+    a: "Yes. Your directory runs on a domain you own. You choose and register the domain in your name, and we connect it during setup. If you don't have one yet, tell us and we'll talk through options with you.",
   },
   {
     q: "Is the directory independently branded?",
-    a: "Yes. Buyers and sellers see your name, logo, colors and contact details.",
+    a: "Yes. Your directory carries your name, logo, colors and contact details, not South Suburbs Best's. Your South Suburbs Best Marketplace listing is the one place your business appears under the South Suburbs Best brand.",
   },
   {
     q: "Who owns the underlying platform?",
@@ -162,7 +162,7 @@ export const FAQ: { q: string; a: string }[] = [
   },
   {
     q: "How are leads captured?",
-    a: "Every listing has a showing-request and question form. Each request is sent to that listing's agent (or to the directory owner) for follow-up.",
+    a: "Every listing on your directory has a showing-request and question form. Each request goes to that listing's agent, or to you as the directory owner, for follow-up.",
   },
   {
     q: "What is included in my South Suburbs Best Marketplace listing?",
