@@ -1,54 +1,15 @@
-// ZILLOW-BUSTER-SALES-LANDING-001 - static product previews for the
-// sales page. Each one mirrors the markup of the real, live component it
-// represents (cited per preview) so prospects see the actual product,
-// but renders SAMPLE data and never submits anything: a working showing
-// form on a sales page would push fake requests into live lead routing.
-// Every preview carries a "Preview · sample data" ribbon plus an honest
-// status badge (content.ts PREVIEW_STATUS_*), so no illustration can be
-// mistaken for certified, customer-domain functionality.
+// Static product examples for the real estate directory sales page.
+// Each one mirrors the markup of the real, live component it represents
+// (cited per example) so prospects see the actual product, but renders
+// SAMPLE data and never submits anything: a working showing form on a
+// sales page would push fake requests into live lead routing. Every
+// frame carries a plain "Example" tag; no development-status language
+// is shown to customers.
 
 import Link from "next/link";
 import { Bath, BedDouble, CalendarCheck, Home, MapPin, Ruler, Search, Star } from "lucide-react";
-import { PREVIEW_STATUS_DETAIL, PREVIEW_STATUS_LABEL, type PreviewStatus } from "./content";
 
 const PRIMARY = "#1e3a5f";
-
-export function StatusBadge({ status }: { status: PreviewStatus }) {
-  const tone =
-    status === "live"
-      ? "bg-emerald-50 text-emerald-700 ring-emerald-200"
-      : status === "partial"
-        ? "bg-sky-50 text-sky-700 ring-sky-200"
-        : "bg-amber-50 text-amber-800 ring-amber-200";
-  const dot = status === "live" ? "bg-emerald-500" : status === "partial" ? "bg-sky-500" : "bg-amber-500";
-  return (
-    <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ring-1 ${tone}`}>
-      <span className={`h-1.5 w-1.5 rounded-full ${dot}`} aria-hidden />
-      {PREVIEW_STATUS_LABEL[status]}
-    </span>
-  );
-}
-
-export function PreviewLegend() {
-  const statuses: PreviewStatus[] = ["live", "partial", "concept"];
-  return (
-    <div className="rounded-2xl bg-slate-50 p-5 ring-1 ring-slate-200">
-      <p className="text-sm font-semibold text-slate-900">How to read these previews</p>
-      <p className="mt-1 text-xs text-slate-500">
-        Every screen on this page is an illustration with sample data, not a real listing, agent or customer. Badges show
-        how far along each feature is.
-      </p>
-      <ul className="mt-3 grid gap-2 sm:grid-cols-3">
-        {statuses.map((s) => (
-          <li key={s} className="text-xs text-slate-600">
-            <StatusBadge status={s} />
-            <p className="mt-1.5">{PREVIEW_STATUS_DETAIL[s]}</p>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
 
 function BrowserFrame({ url, children }: { url: string; children: React.ReactNode }) {
   return (
@@ -59,7 +20,7 @@ function BrowserFrame({ url, children }: { url: string; children: React.ReactNod
         <span className="h-2.5 w-2.5 rounded-full bg-emerald-300" />
         <span className="ml-3 min-w-0 truncate rounded-md bg-white px-3 py-0.5 text-[11px] text-slate-400 ring-1 ring-slate-200">{url}</span>
         <span className="ml-auto shrink-0 rounded bg-slate-900/80 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white">
-          Preview · sample data
+          Example
         </span>
       </div>
       {children}
@@ -247,8 +208,8 @@ export function BuilderCommunityPreview() {
 }
 
 // Mirrors the "Featured Local Agents" cards in app/real-estate/page.tsx,
-// with one card shown in its featured-upgrade state (a concept: no real
-// estate business has featured placement configured today).
+// with one card shown in its featured-upgrade state. Featured placement
+// is not configured for real estate listings yet (see readiness doc).
 export function MarketplacePreview() {
   const cards = [
     { initials: "YB", name: "Your Business", area: "Homewood", featured: true },
@@ -297,7 +258,7 @@ export function LiveDemoLink({ tone = "light" }: { tone?: "light" | "dark" }) {
           : "inline-flex items-center gap-2 rounded-full bg-white/10 px-6 py-3 text-sm font-semibold text-white ring-1 ring-white/25 transition hover:bg-white/20"
       }
     >
-      <MapPin className="h-4 w-4" /> Explore the live SSB Real Estate Directory
+      <MapPin className="h-4 w-4" /> Explore the South Suburbs Best Real Estate Directory
     </Link>
   );
 }

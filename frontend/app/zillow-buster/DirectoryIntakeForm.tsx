@@ -1,11 +1,11 @@
 "use client";
 
-// ZILLOW-BUSTER-SALES-LANDING-001 - the sales page's conversion form.
+// Real estate directory sales page - the conversion form.
 //
 // It reuses the same canonical public lead path every other SSB
 // conversion action uses (/v1/public/directory-lead, see
 // real-estate/ShowingInquiryForm.tsx) - never a second endpoint. No
-// workflow key for Zillow Buster sales intake has been approved yet, so
+// workflow key for directory sales intake has been approved yet, so
 // live submission stays OFF until NEXT_PUBLIC_ZB_INTAKE_WORKFLOW_KEY is
 // set to a founder-approved key at build time. Until then the form
 // never calls the network: it hands the prospect a pre-filled email to
@@ -14,26 +14,28 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { CONFIGURATIONS, SALES_CONTACT, type ConfigKey } from "./content";
+import { DIRECTORIES, SALES_CONTACT, type DirectoryKey } from "./content";
 
 const LEAD_ENDPOINT = "https://automation.leads2scale.com/v1/public/directory-lead";
 const INTAKE_WORKFLOW_KEY = process.env.NEXT_PUBLIC_ZB_INTAKE_WORKFLOW_KEY || "";
 
-const ADD_ONS = ["AI Receptionist", "AI Prospector", "AI Executive Assistant", "Featured marketplace placement"];
+// The only upsell on this page. AI Employees moved to the separate
+// customer upsell journey (_upsell/AiEmployeesSection.tsx).
+const ADD_ONS = ["Featured marketplace placement"];
 
-function isConfigKey(value: string | null): value is ConfigKey {
-  return CONFIGURATIONS.some((c) => c.key === value);
+function isDirectoryKey(value: string | null): value is DirectoryKey {
+  return DIRECTORIES.some((c) => c.key === value);
 }
 
 export default function DirectoryIntakeForm() {
   // Buyer-specific CTAs link to ?directory=<key>#get-started so the form
-  // opens with the configuration the prospect was just reading about.
+  // opens with the directory the prospect was just reading about.
   const searchParams = useSearchParams();
   const requested = searchParams.get("directory");
-  const [configuration, setConfiguration] = useState<ConfigKey>(isConfigKey(requested) ? requested : "solo-agent");
+  const [configuration, setConfiguration] = useState<DirectoryKey>(isDirectoryKey(requested) ? requested : "solo-agent");
 
   useEffect(() => {
-    if (isConfigKey(requested)) setConfiguration(requested);
+    if (isDirectoryKey(requested)) setConfiguration(requested);
   }, [requested]);
   const [name, setName] = useState("");
   const [company, setCompany] = useState("");
@@ -46,7 +48,7 @@ export default function DirectoryIntakeForm() {
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error" | "preview">("idle");
 
-  const configName = CONFIGURATIONS.find((c) => c.key === configuration)?.name || configuration;
+  const configName = DIRECTORIES.find((c) => c.key === configuration)?.name || configuration;
   const teamSizeLabel =
     configuration === "brokerage" ? "Number of agents" : configuration === "builder" ? "Number of communities" : null;
 
@@ -56,7 +58,7 @@ export default function DirectoryIntakeForm() {
 
   function summary(): string {
     return [
-      `Configuration: ${configName}`,
+      `Directory: ${configName}`,
       `Name: ${name}`,
       company && `Business: ${company}`,
       `Email: ${email}`,
@@ -89,7 +91,7 @@ export default function DirectoryIntakeForm() {
           clientId: "SSB_PROD",
           tenantId: "SSB",
           workflowKey: INTAKE_WORKFLOW_KEY,
-          source: "zillow_buster_sales_page",
+          source: "ssb_real_estate_directory_sales_page",
           contact: { name, email, phone },
           message: summary(),
           metadata: { configuration, company, serviceArea, teamSize, domainStatus, addOns },
@@ -118,7 +120,7 @@ export default function DirectoryIntakeForm() {
 
   if (status === "preview") {
     const mailto = `mailto:${SALES_CONTACT.email}?subject=${encodeURIComponent(
-      `Zillow Buster: ${configName}`
+      `South Suburbs Best directory request: ${configName}`
     )}&body=${encodeURIComponent(summary())}`;
     return (
       <div className="rounded-2xl bg-white p-8 text-slate-800 ring-1 ring-slate-200">
@@ -161,11 +163,11 @@ export default function DirectoryIntakeForm() {
         <legend className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
           Which directory are you interested in?
         </legend>
-        <div className="grid gap-2 sm:grid-cols-2">
-          {CONFIGURATIONS.map((c) => (
+        <div className="grid gap-2 sm:grid-cols-3">
+          {DIRECTORIES.map((c) => (
             <label
               key={c.key}
-              className={`cursor-pointer rounded-xl px-4 py-3 text-sm font-semibold ring-1 transition ${
+              className={`flex cursor-pointer items-center justify-center rounded-xl px-3 py-3 text-center text-sm font-semibold ring-1 transition ${
                 configuration === c.key
                   ? "bg-[#1e3a5f] text-white ring-[#1e3a5f]"
                   : "bg-slate-50 text-slate-700 ring-slate-200 hover:ring-slate-300"
@@ -212,7 +214,7 @@ export default function DirectoryIntakeForm() {
 
       <fieldset className="mt-5">
         <legend className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
-          Interested in growth upgrades? (optional)
+          Optional upgrade
         </legend>
         <div className="flex flex-wrap gap-2">
           {ADD_ONS.map((addOn) => (
@@ -251,7 +253,7 @@ export default function DirectoryIntakeForm() {
       </button>
       {status === "error" && (
         <p className="mt-3 text-sm text-red-600">
-          Something went wrong. Please call {SALES_CONTACT.phone} or email {SALES_CONTACT.email}.
+          Something went wrong. Please call {SALES_CONTACT.phone}.
         </p>
       )}
       <p className="mt-3 text-center text-xs text-slate-400">No payment required. We&apos;ll confirm fit before anything is built.</p>

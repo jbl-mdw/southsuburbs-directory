@@ -1,8 +1,39 @@
-# Zillow Buster Sales Landing Page: Discovery, Analysis and Launch Readiness
+# South Suburbs Best Real Estate Directory Sales Page: Discovery, Analysis and Launch Readiness
 
 Mission: ZILLOW-BUSTER-SALES-LANDING-001
 Branch: `claude/tender-mendel-5pvk3u` (isolated; not merged, not deployed)
 Page: `frontend/app/zillow-buster/` → route `/zillow-buster` (the slug is a placeholder pending founder decision, see §7)
+
+## 0. Founder refinement v3 (current state, supersedes earlier sections where they conflict)
+
+**Brand and scope changes**
+- South Suburbs Best is the only customer-facing brand. "Zillow Buster" was removed from all page copy, the metadata title, the widget page context and the intake email subject. (It survives only in internal names: the route folder, an env var name and this doc's mission ID.)
+- Leads Grow Revenue was removed from page copy. The only visible reference is the **shared site footer**, which currently reads "Powered by Leads Grow Revenue • AI Automation & Local Marketing".
+- The page sells **three directory subscriptions** (Solo Agent, Brokerage, Builder / Developer). The SSB Real Estate Marketplace is presented as owned and operated by South Suburbs Best and included with every directory, not as a product. **Featured placement** is the only optional paid upgrade.
+- The AI Employees section was removed from the page. It is preserved, self-contained, at `frontend/app/zillow-buster/_upsell/AiEmployeesSection.tsx` (a private Next.js folder, so it is never routed) for the separate customer upsell journey.
+- Sales phone is now (708) 847-4211. The old email address is no longer displayed (it carries a non-SSB name). The email fallback still sends to it.
+- Development-status badges, the preview legend and "sample data / concept / live" language were removed. Example screens carry a plain "Example" tag, and the disclaimer notes they are examples with sample listings. Builder / Developer copy is consultative ("planned around", "we scope it with you", CTA "Book a builder walkthrough") so it never implies a running product. Missing prices show "Request pricing".
+
+**Verified (v3):** typecheck clean; production build compiles; the rendered page body (FAQ answers included) contains none of: Zillow Buster, Leads Grow Revenue, LGR, SSB, the old phone, the old email, status labels, AI Employee names, "pipeline", "manufactur". The form offers 3 directories plus featured placement; `?directory=builder` preselects Builder; `?directory=marketplace` safely falls back to Solo Agent; email fallback subject reads "South Suburbs Best directory request: …"; 0 network POSTs; 0 overflow at 1440px and 390px.
+
+**What automated checkout, intake and onboarding need (nothing built; needs authorization)**
+| Stage | Exists today | Needed |
+|---|---|---|
+| Intake | Form + email fallback; live POST to the existing `/v1/public/directory-lead` gated behind `NEXT_PUBLIC_ZB_INTAKE_WORKFLOW_KEY` | An approved workflow key and its handler in the gateway/n8n; a CRM destination; an auto-reply to the prospect |
+| Checkout | None (no payment code in this repo; `/submit` is a stub) | Approved prices; a payment provider product per directory plus featured placement; checkout links or a hosted checkout; a webhook that records the subscription |
+| Onboarding | None in this repo | A post-payment onboarding form (branding, listings, agents/communities, domain); a provisioning trigger from paid subscription to a directory instance (the template/provisioning pipeline is not in this repo); domain connection steps; a verification sign-off before launch |
+| Marketplace inclusion | `/real-estate` live; `shared_inventory` flag exists | A rule that a paid directory's profile is marked visible in the marketplace; featured sort applied when the upgrade is bought |
+
+### Remaining launch blockers (v3)
+1. **Pricing:** no approved price for any of the 3 directories or for featured placement (`content.ts` `price: null` everywhere). Every pricing spot shows "Request pricing".
+2. **Live intake:** no approved workflow key, so requests leave by email to an inbox with a non-SSB name. An SSB-branded sales inbox is needed.
+3. **No checkout or onboarding automation** (table above). Every sale is assisted today.
+4. **Featured placement isn't configured for real estate:** no real estate business has `is_featured` / `premium_status` set, and the `/real-estate` agent list sorts by name, not featured status. It must work before it's sold.
+5. **The shared footer text** differs from the requested "Powered by Leads Grow Revenue." Changing it affects every SSB page (shared component), so it awaits your approval.
+6. **The URL still contains the old brand:** `/zillow-buster` is customer-visible. A new route needs your URL decision.
+7. **Builder / Developer Directory isn't built.** It's sold as a walkthrough only.
+8. **"Who owns the underlying platform?" FAQ:** it now says the platform "stays ours". Confirm the legal entity wording with counsel.
+9. **The live-demo link target** `/real-estate` has a missing hero image and dead `/submit-fsbo` links (pre-existing).
 
 ---
 
