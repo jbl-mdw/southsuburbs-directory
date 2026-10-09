@@ -55,7 +55,7 @@ export default function AskSalesAgentButton({
   }
 
   return (
-    <button type="button" onClick={onClick} className={className}>
+    <button type="button" onClick={onClick} className={className} data-sales-agent-seed={seed || ""} data-sales-agent-fallback={fallbackHref}>
       {children}
     </button>
   );
